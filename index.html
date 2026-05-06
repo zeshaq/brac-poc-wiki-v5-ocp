@@ -60,7 +60,8 @@
       restore hub <code>hub-dr</code> is passive. <code>spoke-dc</code> is the
       active workload cluster, while <code>spoke-dr</code> is platform-ready
       standby. The immediate operational queue is DR drill readiness, Kafka
-      DNS readiness for future app consumption, and OSSM 3 workload onboarding.
+      DNS readiness for future app consumption, ACM Observability convergence,
+      and OSSM 3 workload onboarding.
     </p>
   </section>
 
@@ -76,7 +77,7 @@
       <a class="page-card" href="/hub-dr"><strong>hub-dr</strong><span>Passive restore hub readiness, blockers, and activation constraints.</span></a>
       <a class="page-card" href="/spoke-dc"><strong>spoke-dc</strong><span>Active workload cluster details and app onboarding status.</span></a>
       <a class="page-card" href="/spoke-dr"><strong>spoke-dr</strong><span>Standby workload cluster details and RHOAI platform state.</span></a>
-      <a class="page-card" href="/platform-services"><strong>Platform services</strong><span>Storage, identity, user workload metrics, AI, OADP, and observability.</span></a>
+      <a class="page-card" href="/platform-services"><strong>Platform services</strong><span>Storage, identity, ACM Observability, Vault direction, AI, OADP, and metrics.</span></a>
       <a class="page-card" href="/backup-dr"><strong>Backup and DR</strong><span>OADP status, ACM backup gates, restore hub gates, and validation commands.</span></a>
       <a class="page-card" href="/service-mesh"><strong>Service mesh</strong><span>OSSM 3 live state and workload onboarding checklist.</span></a>
       <a class="page-card" href="/apps-kafka"><strong>Apps and Kafka</strong><span>Java/JBoss app architecture and RKE2 Kafka dependency readiness.</span></a>
@@ -95,6 +96,7 @@
       <li><strong>ACM/MCE image readiness:</strong> hub-dr needs a mirror or pre-pull path for large ACM/MCE images before a controlled activation drill.</li>
       <li><strong>RKE2 Kafka DNS:</strong> Kafka is reachable by IP/SNI on 443, but the advertised Kafka ingress hostnames do not resolve yet.</li>
       <li><strong>OSSM 3 usage:</strong> both spokes have healthy OSSM 3 control planes, but no application workload is currently onboarded.</li>
+      <li><strong>ACM Observability:</strong> hub-dc is Ready; hub-dr is still converging because of slow/failed image pulls.</li>
       <li><strong>spoke-dr semantics:</strong> current posture is platform standby, not a full hot workload mirror.</li>
     </ul>
   </section>

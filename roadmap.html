@@ -37,6 +37,11 @@
     <table>
       <thead><tr><th>Track</th><th>Next step</th><th>Done signal</th></tr></thead>
       <tbody>
+        <tr><td>ACM Observability</td><td>Finish <code>hub-dr</code> image-pull convergence and verify both hub dashboards.</td><td><code>MultiClusterObservability</code> Ready on both hubs and no non-running pods.</td></tr>
+        <tr><td>Backup health alerts</td><td>Add ACM/OADP freshness policies and alerts.</td><td>Failed or stale backups produce visible policy/alert signals before DR drills.</td></tr>
+        <tr><td>Image mirror / pre-pull</td><td>Mirror or pre-pull ACM, MCE, GitOps, RHACS, and ACM Observability images.</td><td>First-start hub-dr pulls no longer take 15-20 minutes or fail on registry 503s.</td></tr>
+        <tr><td>Governance PolicySets</td><td>Group baseline ACM policies into explicit PolicySets.</td><td>Compliance posture is visible by purpose rather than loose individual policies.</td></tr>
+        <tr><td>Vault / external secrets</td><td>Choose external HA Vault target and install a cluster integration operator only when rotation is needed.</td><td>Each cluster has its own auth role and no static app secrets are committed to Git.</td></tr>
         <tr><td>Kafka for apps</td><td>Fix DNS for RKE2 Kafka ingress hostnames and align docs around the live 443 endpoint.</td><td>OpenShift pod can resolve and TLS-connect to bootstrap hostname on 443.</td></tr>
         <tr><td>Java/JBoss demo app</td><td>Create workload base, image build, runtime config, and OCP overlay.</td><td>App runs on selected spoke with health checks and documented Kafka config.</td></tr>
         <tr><td>OSSM 3 onboarding</td><td>Select workload namespace and routing model.</td><td>Kiali shows app traffic and routes behave as intended.</td></tr>
@@ -50,4 +55,3 @@
 </main>
 </body>
 </html>
-

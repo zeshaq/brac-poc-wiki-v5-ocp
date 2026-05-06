@@ -32,6 +32,7 @@
       <dt>Restore posture</dt><dd>No active <code>BackupSchedule</code> or <code>Restore</code> should exist during passive state.</dd>
       <dt>Storage</dt><dd>LVMS retained with pinned devices <code>/dev/vdb</code>, <code>/dev/vdc</code>, and <code>/dev/vdd</code>.</dd>
       <dt>User workload metrics</dt><dd>Disabled by <code>cluster-monitoring-config</code>; no user workload monitoring pods should run on this hub.</dd>
+      <dt>ACM Observability</dt><dd>Enabled in desired state. Current rollout is waiting on slow or failed Red Hat registry image pulls for Grafana.</dd>
     </dl>
   </section>
 

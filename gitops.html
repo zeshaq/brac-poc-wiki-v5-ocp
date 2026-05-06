@@ -49,7 +49,9 @@
     <ul class="plain-list">
       <li><code>demo-orders</code> was removed from <code>lab-workloads</code> and inactive Kafka fixtures were removed from <code>lab-gitops-full</code>.</li>
       <li>AMQ Streams, Streams Console, and Apicurio Registry were removed from live spoke desired state.</li>
-      <li>Hub storage-light work removed ODF/NooBaa, Pipelines, logging, tracing, MinIO/Loki/Tempo, and observability stacks from hubs while retaining LVMS and RHACS.</li>
+      <li>Hub storage-light work removed ODF/NooBaa, Pipelines, logging, tracing, MinIO/Loki/Tempo, and app observability test stacks from hubs while retaining LVMS and RHACS.</li>
+      <li>ACM Observability was added back as a hub management service through <code>components/platform/acm-observability</code>; its object-store Secret remains local-only.</li>
+      <li>The ACS Critical-fixable admission policy now excludes <code>open-cluster-management-observability</code> as a trusted ACM platform namespace.</li>
       <li><code>lab-gitops-full/CHANGELOG.md</code> must be updated when desired-state changes occur.</li>
     </ul>
   </section>
@@ -69,4 +71,3 @@ oc kustomize lab-workloads/clusters/spoke-dr</code></pre>
 </main>
 </body>
 </html>
-

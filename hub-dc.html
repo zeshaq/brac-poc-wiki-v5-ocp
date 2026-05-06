@@ -32,12 +32,13 @@
       <dt>ACM backup</dt><dd><code>acm-dpa</code> reconciled, <code>acm-dpa-1</code> available, <code>hub-backup-daily</code> enabled.</dd>
       <dt>Managed clusters</dt><dd><code>hub-dr</code> is no longer a managed cluster on <code>hub-dc</code>. Current managed pull placement selects spokes only.</dd>
       <dt>User workload metrics</dt><dd>Disabled by <code>cluster-monitoring-config</code>; no user workload monitoring pods should run on this hub.</dd>
+      <dt>ACM Observability</dt><dd>Enabled and recorded <code>Ready=True</code>. Grafana is part of the ACM Observability stack.</dd>
     </dl>
   </section>
 
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Storage</p><h2>Storage-light hub posture</h2></div>
-    <p>Hub storage was intentionally reduced. LVMS and RHACS remain. ODF/NooBaa, Pipelines/Tekton Results, logging, tracing, MinIO/Loki/Tempo, OpenTelemetry, Cluster Observability, and Network Observability were removed from hub live state.</p>
+    <p>Hub storage was intentionally reduced. LVMS and RHACS remain. ODF/NooBaa, Pipelines/Tekton Results, app logging/tracing stacks, MinIO/Loki/Tempo, OpenTelemetry, and Network Observability were removed from hub live state. ACM Observability remains as a hub management service.</p>
     <ul class="plain-list">
       <li><code>lvms-vg1</code> is the remaining hub storage class.</li>
       <li>RHACS Central PVCs remain bound on <code>lvms-vg1</code>.</li>

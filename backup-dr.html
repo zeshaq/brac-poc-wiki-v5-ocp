@@ -44,6 +44,20 @@
   </section>
 
   <section class="panel">
+    <div class="section-head"><p class="section-kicker">Object storage</p><h2>External MinIO bucket layout</h2></div>
+    <table>
+      <thead><tr><th>Consumer</th><th>Bucket</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>ACM Observability on <code>hub-dc</code></td><td><code>acm-observability-hub-dc</code></td><td>Dedicated bucket and scoped MinIO user.</td></tr>
+        <tr><td>ACM Observability on <code>hub-dr</code></td><td><code>acm-observability-hub-dr</code></td><td>Dedicated bucket and scoped MinIO user. Do not share with <code>hub-dc</code>.</td></tr>
+        <tr><td>General OADP</td><td><code>oadp-&lt;cluster&gt;</code></td><td>One bucket per cluster.</td></tr>
+        <tr><td>ACM hub backup</td><td><code>acm-cluster-backup</code></td><td>Shared by the active/restore hub backup workflow.</td></tr>
+      </tbody>
+    </table>
+    <p>The observability object-store credentials are seeded as local-only Kubernetes Secrets and are intentionally not stored in Git.</p>
+  </section>
+
+  <section class="panel">
     <div class="section-head"><p class="section-kicker">Validation</p><h2>Read-only checks</h2></div>
     <pre class="command"><code>export KUBECONFIG=&lt;hub-dc-kubeconfig&gt;
 oc -n open-cluster-management-backup get dpa,bsl
