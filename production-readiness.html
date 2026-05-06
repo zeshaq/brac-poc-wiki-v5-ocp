@@ -56,6 +56,27 @@
   </section>
 
   <section class="panel">
+    <div class="section-head"><p class="section-kicker">Execution tracker</p><h2>Milestone and phase issues</h2></div>
+    <p>Implementation is tracked in the <a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/milestone/5">Production Readiness Gates</a> milestone and the <a href="https://github.com/users/zeshaq/projects/8">BRAC POC OpenShift Operations</a> project board.</p>
+    <table>
+      <thead><tr><th>Phase</th><th>Issue</th><th>Gate</th></tr></thead>
+      <tbody>
+        <tr><td>0</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/18">#18 Gate scope, scoring, and evidence matrix</a></td><td>Define how gates pass, block, or carry accepted risk.</td></tr>
+        <tr><td>1</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/19">#19 Core cluster health</a></td><td>ClusterVersion, ClusterOperators, nodes, MachineConfigPools, and live exceptions.</td></tr>
+        <tr><td>2</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/20">#20 Production integrations</a></td><td>Storage, identity, ingress, DNS, certificates, alerts, and Vault/ESO boundaries.</td></tr>
+        <tr><td>3</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/21">#21 etcd and platform backup</a></td><td>Cluster backup process, restore path, retention, and off-cluster survivability.</td></tr>
+        <tr><td>4</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/22">#22 OADP and ACM backup</a></td><td>DPA/BSL health, backup freshness, alert behavior, and restore dry-run readiness.</td></tr>
+        <tr><td>5</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/23">#23 Upgrade and lifecycle readiness</a></td><td>Update path, operator compatibility, removed APIs, must-gather, and rollback planning.</td></tr>
+        <tr><td>6</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/24">#24 Image and disconnected readiness</a></td><td>Durable mirror, IDMS/ITMS, catalogs, registry trust, and pull-secret handling.</td></tr>
+        <tr><td>7</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/25">#25 Security and secrets</a></td><td>RBAC, kubeadmin posture, Vault/ESO boundaries, RHACS, and no static secrets in Git.</td></tr>
+        <tr><td>8</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/26">#26 Observability and operations</a></td><td>Monitoring, alerts, ACM Observability, logging/tracing, runbooks, and evidence hygiene.</td></tr>
+        <tr><td>9</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/27">#27 Regional-DR readiness</a></td><td>ODF Advanced Regional-DR, Submariner/CIDR, DRPolicy, protected app, failover, and failback.</td></tr>
+        <tr><td>10</td><td><a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/issues/28">#28 Final evidence certification</a></td><td>Publish pass, blocked, or accepted-risk status for every gate.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
     <div class="section-head"><p class="section-kicker">Implementation queue</p><h2>How these gates become work</h2></div>
     <ul class="plain-list">
       <li><strong>Analyze:</strong> compare each gate against live evidence and current desired state before creating remediation changes.</li>
