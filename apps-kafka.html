@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka" aria-current="page">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka" aria-current="page">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -32,6 +32,7 @@
         <tr><td>Workload desired state</td><td><code>lab-workloads/</code></td><td>Namespace, Deployment, Service, ConfigMap, runtime Secret reference, health probes, route or mesh resources.</td></tr>
         <tr><td>Platform desired state</td><td><code>lab-gitops-full/</code></td><td>Only shared platform prerequisites, policy, operators, or cluster-level resources.</td></tr>
         <tr><td>Kafka platform</td><td>RKE2 Kafka</td><td>App-specific KafkaUser, ACLs, topic policy, cluster CA distribution, runtime SCRAM credentials.</td></tr>
+        <tr><td>Secrets platform</td><td>RKE2 Vault plus ESO</td><td>Namespace-specific Vault policy, role, SecretStore or ExternalSecret, and no app secret values in Git.</td></tr>
       </tbody>
     </table>
   </section>
@@ -53,7 +54,7 @@ sasl.mechanism=SCRAM-SHA-512</code></pre>
       <li><strong>Fix DNS:</strong> add explicit records or wildcard DNS for <code>*.kafka.apps.sub.comptech-lab.com</code> to the HAProxy IP.</li>
       <li><strong>Create app identity:</strong> do not reuse platform Kafka users such as <code>mm2</code> or <code>redis-applier</code>.</li>
       <li><strong>Define topics and ACLs:</strong> model least privilege for the app producer and consumer behavior.</li>
-      <li><strong>Handle secrets safely:</strong> runtime credentials must not be committed into Git.</li>
+      <li><strong>Handle secrets safely:</strong> use the validated Vault/ESO pattern; runtime credentials must not be committed into Git.</li>
       <li><strong>Mount trust:</strong> provide the Strimzi cluster CA to the Java trust configuration.</li>
       <li><strong>Choose placement:</strong> start on <code>spoke-dc</code>, then decide whether <code>spoke-dr</code> is active standby.</li>
     </ol>
@@ -62,10 +63,10 @@ sasl.mechanism=SCRAM-SHA-512</code></pre>
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Runtime shape</p><h2>Expected OCP resources</h2></div>
     <ul class="plain-list">
-      <li>Namespace with explicit owner labels and optional mesh injection label.</li>
+      <li>Namespace with explicit owner labels and optional <code>istio.io/dataplane-mode=ambient</code> label.</li>
       <li>Deployment for the Java/JBoss container with readiness and liveness probes.</li>
       <li>ConfigMap for non-secret Kafka bootstrap and app tuning.</li>
-      <li>Secret reference for SCRAM username/password or mounted secret from an approved external secret flow.</li>
+      <li>Secret reference for SCRAM username/password from an app-specific ExternalSecret backed by Vault.</li>
       <li>Service and Route or Istio Gateway/VirtualService, depending on whether mesh routing is in scope.</li>
       <li>NetworkPolicy only after required egress to Kafka and platform services is clear.</li>
     </ul>
@@ -75,4 +76,3 @@ sasl.mechanism=SCRAM-SHA-512</code></pre>
 </main>
 </body>
 </html>
-

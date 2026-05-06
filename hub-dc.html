@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc" aria-current="page">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc" aria-current="page">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -33,6 +33,7 @@
       <dt>Managed clusters</dt><dd><code>hub-dr</code> is no longer a managed cluster on <code>hub-dc</code>. Current managed pull placement selects spokes only.</dd>
       <dt>User workload metrics</dt><dd>Disabled by <code>cluster-monitoring-config</code>; no user workload monitoring pods should run on this hub.</dd>
       <dt>ACM Observability</dt><dd>Enabled and recorded <code>Ready=True</code>. Grafana is part of the ACM Observability stack. PVC requests were increased, but still use lab-local LVMS.</dd>
+      <dt>Vault / ESO</dt><dd><code>SecretStore/rke2-vault</code> is <code>Ready=True</code> and <code>ExternalSecret/eso-vault-smoke</code> is synced through the <code>kubernetes-hub-dc</code> Vault auth mount.</dd>
     </dl>
   </section>
 

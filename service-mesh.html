@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh" aria-current="page">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh" aria-current="page">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -20,7 +20,7 @@
   <header class="page-header">
     <div class="eyebrow">OSSM 3</div>
     <h1>OpenShift Service Mesh 3</h1>
-    <p>OSSM 3 is installed on both workload spokes. The platform is ready; the remaining work is application onboarding and validation.</p>
+    <p>OSSM 3 ambient mode is enabled on both workload spokes. The platform is ready; the remaining work is application namespace opt-in and validation.</p>
   </header>
 
   <section class="panel">
@@ -28,8 +28,8 @@
     <table>
       <thead><tr><th>Cluster</th><th>Operators</th><th>Control plane</th><th>Workload state</th></tr></thead>
       <tbody>
-        <tr><td><code>spoke-dc</code></td><td><code>servicemeshoperator3.v3.3.2</code>, <code>kiali-operator.v2.22.2</code></td><td><code>Istio/default</code> and <code>IstioCNI/default</code> healthy</td><td>Only <code>istio-ingress</code> labeled for injection</td></tr>
-        <tr><td><code>spoke-dr</code></td><td><code>servicemeshoperator3.v3.3.2</code>, <code>kiali-operator.v2.22.2</code></td><td><code>Istio/default</code> and <code>IstioCNI/default</code> healthy</td><td>Only <code>istio-ingress</code> labeled for injection</td></tr>
+        <tr><td><code>spoke-dc</code></td><td><code>servicemeshoperator3.v3.3.2</code>, <code>kiali-operator.v2.22.2</code></td><td><code>Istio/default</code>, <code>IstioCNI/default</code>, and <code>ZTunnel/default</code> healthy at <code>v1.28.5</code></td><td>No application namespace has opted into ambient yet.</td></tr>
+        <tr><td><code>spoke-dr</code></td><td><code>servicemeshoperator3.v3.3.2</code>, <code>kiali-operator.v2.22.2</code></td><td><code>Istio/default</code>, <code>IstioCNI/default</code>, and <code>ZTunnel/default</code> healthy at <code>v1.28.5</code></td><td>No application namespace has opted into ambient yet.</td></tr>
       </tbody>
     </table>
   </section>
@@ -38,7 +38,7 @@
     <div class="section-head"><p class="section-kicker">Onboarding</p><h2>Application checklist</h2></div>
     <ol class="steps">
       <li><strong>Select workload:</strong> define which app should enter the mesh and which spoke owns the first deployment.</li>
-      <li><strong>Define namespace labels:</strong> add injection labels only for namespaces that should be meshed.</li>
+      <li><strong>Define namespace labels:</strong> use <code>istio.io/dataplane-mode=ambient</code> for namespaces that should join ambient mode.</li>
       <li><strong>Add routing:</strong> create Gateway and VirtualService resources if external or cross-service mesh routing is required.</li>
       <li><strong>Validate telemetry:</strong> check Kiali graph, service health, and request paths after traffic is generated.</li>
       <li><strong>Record DR behavior:</strong> document whether spoke-dr is passive platform standby or active app standby for the workload.</li>
@@ -58,4 +58,3 @@
 </main>
 </body>
 </html>
-

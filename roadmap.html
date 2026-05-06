@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap" aria-current="page">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap" aria-current="page">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -22,6 +22,15 @@
     <h1>Roadmap and gates</h1>
     <p>The authoritative resume queue remains in <code>TODO.md</code>. This page gives the project-readable version of the same operational sequence.</p>
   </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Completed gate</p><h2>Vault and ESO integration</h2></div>
+    <div class="roadmap">
+      <article><span>1</span><h3>Scoped export token</h3><p>RKE2 Vault export now uses a scoped periodic token and scripts renew it at job start.</p></article>
+      <article><span>2</span><h3>Kubernetes auth</h3><p>Vault has one Kubernetes auth mount per OpenShift cluster for ESO login boundaries.</p></article>
+      <article><span>3</span><h3>ESO smoke path</h3><p><code>SecretStore/rke2-vault</code> and <code>ExternalSecret/eso-vault-smoke</code> are Ready on all four clusters.</p></article>
+    </div>
+  </section>
 
   <section class="panel">
     <div class="roadmap">
@@ -41,7 +50,7 @@
         <tr><td>Backup health alerts</td><td>Validate the new ACM/OADP alert rules through an alerting cycle.</td><td>Failed or stale backups produce visible alert signals before DR drills.</td></tr>
         <tr><td>Image mirror / pre-pull</td><td>Monitor current pre-pull, then implement durable mirror/IDMS.</td><td>First-start hub-dr pulls no longer depend on public registry latency.</td></tr>
         <tr><td>Governance PolicySets</td><td>Group baseline ACM policies into explicit PolicySets.</td><td>Compliance posture is visible by purpose rather than loose individual policies.</td></tr>
-        <tr><td>Vault / external secrets</td><td>Choose external HA Vault target and install a cluster integration operator only when rotation is needed.</td><td>Each cluster has its own auth role and no static app secrets are committed to Git.</td></tr>
+        <tr><td>Vault / external secrets</td><td>Use the completed smoke path as the template for app-specific policies and roles.</td><td>Each real app gets a scoped Vault policy and no static app secrets are committed to Git.</td></tr>
         <tr><td>Kafka for apps</td><td>Fix DNS for RKE2 Kafka ingress hostnames and align docs around the live 443 endpoint.</td><td>OpenShift pod can resolve and TLS-connect to bootstrap hostname on 443.</td></tr>
         <tr><td>Java/JBoss demo app</td><td>Create workload base, image build, runtime config, and OCP overlay.</td><td>App runs on selected spoke with health checks and documented Kafka config.</td></tr>
         <tr><td>OSSM 3 onboarding</td><td>Select workload namespace and routing model.</td><td>Kiali shows app traffic and routes behave as intended.</td></tr>

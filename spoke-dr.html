@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr" aria-current="page">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr" aria-current="page">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -32,6 +32,7 @@
       <dt>AMQ/Kafka</dt><dd>Retired from spoke desired state. No local AMQ/Kafka/Strimzi objects remain.</dd>
       <dt>AI platform</dt><dd>RHOAI operator installed, but no DataScienceCluster or user AI workloads exist.</dd>
       <dt>User workload metrics</dt><dd>Enabled; user workload Prometheus, Thanos ruler, and the Prometheus operator should run here.</dd>
+      <dt>Vault / ESO</dt><dd><code>SecretStore/rke2-vault</code> is <code>Ready=True</code> and <code>ExternalSecret/eso-vault-smoke</code> is synced through the <code>kubernetes-spoke-dr</code> Vault auth mount.</dd>
     </dl>
   </section>
 
@@ -39,8 +40,9 @@
     <div class="section-head"><p class="section-kicker">OSSM 3</p><h2>Mesh platform state</h2></div>
     <ul class="plain-list">
       <li><code>servicemeshoperator3.v3.3.2</code> and <code>kiali-operator.v2.22.2</code> CSVs recorded <code>Succeeded</code>.</li>
-      <li><code>Istio/default</code>, <code>IstioCNI/default</code>, Kiali, OSSM Console, CNI pods, and ingress gateway are recorded running.</li>
-      <li>Only <code>istio-ingress</code> is labeled for injection.</li>
+      <li><code>Istio/default</code>, <code>IstioCNI/default</code>, <code>ZTunnel/default</code>, Kiali, OSSM Console, CNI pods, and ingress gateway are recorded running.</li>
+      <li>Ambient components are pinned to OSSM 3.3 version <code>v1.28.5</code>.</li>
+      <li>No application namespace has opted into ambient yet; use <code>istio.io/dataplane-mode=ambient</code> for app onboarding.</li>
       <li>RHOAI ServiceMesh capability is recorded <code>False/MissingOperator</code> because it expects the old OSSM v2 operator; this does not block OSSM 3 itself.</li>
     </ul>
   </section>

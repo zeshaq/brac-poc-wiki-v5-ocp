@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc" aria-current="page">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc" aria-current="page">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -32,6 +32,7 @@
       <dt>Identity</dt><dd>WSO2 IS was removed. OAuth IDP is Google only.</dd>
       <dt>AMQ/Kafka</dt><dd>Retired from spoke desired state. No local <code>kafka</code> namespace or Strimzi objects remain.</dd>
       <dt>User workload metrics</dt><dd>Enabled; user workload Prometheus, Thanos ruler, and the Prometheus operator should run here.</dd>
+      <dt>Vault / ESO</dt><dd><code>SecretStore/rke2-vault</code> is <code>Ready=True</code> and <code>ExternalSecret/eso-vault-smoke</code> is synced through the <code>kubernetes-spoke-dc</code> Vault auth mount. Existing Argo drift is non-ESO drift in monitoring/Velero resources.</dd>
     </dl>
   </section>
 
@@ -39,9 +40,9 @@
     <div class="section-head"><p class="section-kicker">Service mesh</p><h2>OSSM 3 state</h2></div>
     <ul class="plain-list">
       <li><code>servicemeshoperator3.v3.3.2</code> and <code>kiali-operator.v2.22.2</code> CSVs recorded <code>Succeeded</code>.</li>
-      <li><code>Istio/default</code> and <code>IstioCNI/default</code> recorded healthy.</li>
-      <li>Istio revision <code>default</code> recorded <code>Ready=True</code> with version <code>v1.26.8</code>.</li>
-      <li>Only <code>istio-ingress</code> is labeled for injection.</li>
+      <li><code>Istio/default</code>, <code>IstioCNI/default</code>, and <code>ZTunnel/default</code> recorded healthy.</li>
+      <li>Ambient components are pinned to OSSM 3.3 version <code>v1.28.5</code>.</li>
+      <li>No application namespace has opted into ambient yet; use <code>istio.io/dataplane-mode=ambient</code> for app onboarding.</li>
       <li>No Bookinfo, metrics-demo, otel-demo, liberty-canary, or demo-orders workload namespace exists on the spoke.</li>
     </ul>
   </section>
@@ -51,7 +52,8 @@
     <div class="detail-grid">
       <article class="card"><h3>Workload base</h3><p>Create a Java/JBoss app base in <code>lab-workloads</code> with deployment, service, config, health checks, and overlay placement.</p></article>
       <article class="card"><h3>Kafka dependency</h3><p>Use RKE2 Kafka after the advertised Kafka ingress DNS names resolve and an app-specific SCRAM user exists.</p></article>
-      <article class="card"><h3>Mesh onboarding</h3><p>Label the app namespace for injection only after the workload manifests and routing intent are defined.</p></article>
+      <article class="card"><h3>Secret dependency</h3><p>Use the validated Vault/ESO pattern, but create app-specific Vault policy, role, and ExternalSecret resources before storing app credentials.</p></article>
+      <article class="card"><h3>Mesh onboarding</h3><p>Opt the app namespace into ambient only after the workload manifests and routing intent are defined.</p></article>
       <article class="card"><h3>DR choice</h3><p>Decide whether the app also lands in <code>spoke-dr</code> as hot standby or remains active-only during initial validation.</p></article>
     </div>
   </section>

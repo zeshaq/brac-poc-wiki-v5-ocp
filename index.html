@@ -22,7 +22,7 @@
     <a href="/hub-dr">hub-dr</a>
     <a href="/spoke-dc">spoke-dc</a>
     <a href="/spoke-dr">spoke-dr</a>
-    <a href="/platform-services">Platform services</a>
+    <a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a>
     <a href="/backup-dr">Backup and DR</a>
     <a href="/service-mesh">Service mesh</a>
     <a href="/apps-kafka">Apps and Kafka</a>
@@ -59,9 +59,11 @@
       The management DC side is active through <code>hub-dc</code>. The
       restore hub <code>hub-dr</code> is passive. <code>spoke-dc</code> is the
       active workload cluster, while <code>spoke-dr</code> is platform-ready
-      standby. The immediate operational queue is DR drill readiness, Kafka
-      DNS readiness for future app consumption, durable hub image mirroring,
-      and OSSM 3 workload onboarding.
+      standby. External Secrets Operator now has a validated smoke path to the
+      RKE2-hosted Vault on all four clusters. The immediate operational queue
+      is hub image pre-pull completion, durable image mirroring, backup alert
+      validation, Kafka DNS readiness for future app consumption, and OSSM 3
+      workload onboarding.
     </p>
   </section>
 
@@ -77,7 +79,8 @@
       <a class="page-card" href="/hub-dr"><strong>hub-dr</strong><span>Passive restore hub readiness, blockers, and activation constraints.</span></a>
       <a class="page-card" href="/spoke-dc"><strong>spoke-dc</strong><span>Active workload cluster details and app onboarding status.</span></a>
       <a class="page-card" href="/spoke-dr"><strong>spoke-dr</strong><span>Standby workload cluster details and RHOAI platform state.</span></a>
-      <a class="page-card" href="/platform-services"><strong>Platform services</strong><span>Storage, identity, ACM Observability, Vault direction, AI, OADP, and metrics.</span></a>
+      <a class="page-card" href="/platform-services"><strong>Platform services</strong><span>Storage, identity, ACM Observability, AI, OADP, and metrics.</span></a>
+      <a class="page-card" href="/secrets-vault"><strong>Secrets and Vault</strong><span>RKE2 Vault, ESO SecretStore wiring, scoped export token, and app onboarding guardrails.</span></a>
       <a class="page-card" href="/backup-dr"><strong>Backup and DR</strong><span>OADP status, ACM backup gates, restore hub gates, and validation commands.</span></a>
       <a class="page-card" href="/service-mesh"><strong>Service mesh</strong><span>OSSM 3 live state and workload onboarding checklist.</span></a>
       <a class="page-card" href="/apps-kafka"><strong>Apps and Kafka</strong><span>Java/JBoss app architecture and RKE2 Kafka dependency readiness.</span></a>
@@ -95,6 +98,7 @@
       <li><strong>Backup health:</strong> OADP and ACM backup Prometheus rules now exist, but alert behavior still needs validation before a drill.</li>
       <li><strong>Image readiness:</strong> a hub pre-pull DaemonSet is warming selected recovery images; a durable mirror/IDMS remains required.</li>
       <li><strong>RKE2 Kafka DNS:</strong> Kafka is reachable by IP/SNI on 443, but the advertised Kafka ingress hostnames do not resolve yet.</li>
+      <li><strong>Vault/ESO:</strong> the fleet smoke path is working, but real workloads still need namespace-specific Vault policies and roles.</li>
       <li><strong>OSSM 3 usage:</strong> both spokes have healthy OSSM 3 control planes, but no application workload is currently onboarded.</li>
       <li><strong>ACM Observability storage:</strong> both hubs are Ready with larger PVC requests, but still use lab-local LVMS rather than resilient production storage.</li>
       <li><strong>spoke-dr semantics:</strong> current posture is platform standby, not a full hot workload mirror.</li>
