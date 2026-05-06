@@ -40,6 +40,32 @@
   </section>
 
   <section class="panel">
+    <div class="section-head"><p class="section-kicker">Mermaid</p><h2>Topology as code</h2></div>
+    <p>Copy this Mermaid source into runbooks, Git issues, or other tools that render Mermaid diagrams.</p>
+    <pre class="command"><code class="language-mermaid">flowchart LR
+  subgraph DC["DC site"]
+    HDC["hub-dc&lt;br/&gt;active management hub"]
+    SDC["spoke-dc&lt;br/&gt;active workload cluster"]
+  end
+
+  subgraph DR["DR site"]
+    HDR["hub-dr&lt;br/&gt;passive restore hub"]
+    SDR["spoke-dr&lt;br/&gt;workload standby"]
+  end
+
+  RKE2["RKE2 shared services&lt;br/&gt;Vault, Kafka, MinIO, GitLab"]
+
+  HDC -- "ACM manages" --&gt; SDC
+  HDC -- "ACM manages standby" --&gt; SDR
+  HDC -. "ACM backup and activation path" .-&gt; HDR
+  SDC -. "standby placement decision" .-&gt; SDR
+  RKE2 -- "Vault ESO smoke path" --&gt; HDC
+  RKE2 -- "Vault ESO smoke path" --&gt; HDR
+  RKE2 -- "Vault and future Kafka dependency" --&gt; SDC
+  RKE2 -- "Vault ESO smoke path" --&gt; SDR</code></pre>
+  </section>
+
+  <section class="panel">
     <div class="section-head"><p class="section-kicker">Cluster inventory</p><h2>Role matrix</h2></div>
     <table>
       <thead><tr><th>Cluster</th><th>Role</th><th>Current posture</th><th>Primary concerns</th></tr></thead>
@@ -66,4 +92,3 @@
 </main>
 </body>
 </html>
-
