@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="OpenShift-only operations wiki for the BRAC POC OCP clusters, GitOps setup, DR roadmap, and platform status.">
+<title>BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand">
+    <div class="brand-mark" aria-hidden="true">OCP</div>
+    <div>
+      <div class="brand-title">BRAC POC</div>
+      <div class="brand-sub">OpenShift wiki</div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a href="#overview">Overview</a>
+    <a href="#topology">Topology</a>
+    <a href="#gitops">GitOps model</a>
+    <a href="#hubs">Management hubs</a>
+    <a href="#spokes">Workload spokes</a>
+    <a href="#platform">Platform services</a>
+    <a href="#backup">Backup and DR</a>
+    <a href="#service-mesh">Service mesh</a>
+    <a href="#apps">Apps and Kafka</a>
+    <a href="#roadmap">Roadmap</a>
+    <a href="#rules">Operating rules</a>
+  </nav>
+
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">OpenShift-only tracker</div>
+    <h1>BRAC POC OpenShift operating wiki</h1>
+    <p>
+      A focused view of the OpenShift fleet, setup details, current state, and
+      roadmap. The RKE2 platform has its own catalogue; this wiki is scoped to
+      the OCP clusters and their GitOps-managed platform services.
+    </p>
+  </header>
+
+  <section id="overview" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Fleet</p>
+      <h2>Overview</h2>
+    </div>
+    <div class="status-grid">
+      <article class="metric">
+        <span class="metric-label">Clusters</span>
+        <strong>4</strong>
+        <span>hub-dc, hub-dr, spoke-dc, spoke-dr</span>
+      </article>
+      <article class="metric">
+        <span class="metric-label">OCP version</span>
+        <strong>4.20.18</strong>
+        <span>Last recorded fleet baseline</span>
+      </article>
+      <article class="metric">
+        <span class="metric-label">GitOps source</span>
+        <strong>lab-gitops-full</strong>
+        <span>Platform desired state</span>
+      </article>
+      <article class="metric">
+        <span class="metric-label">Workload source</span>
+        <strong>lab-workloads</strong>
+        <span>Non-platform app bases</span>
+      </article>
+    </div>
+    <p>
+      The active management hub is <code>hub-dc</code>. The passive management
+      restore hub is <code>hub-dr</code>. The active workload cluster is
+      <code>spoke-dc</code>, and <code>spoke-dr</code> is the workload standby.
+      Current work is centered on DR drill readiness, clean GitOps boundaries,
+      OpenShift Service Mesh 3 validation, and onboarding a Java/JBoss demo app.
+    </p>
+  </section>
+
+  <section id="topology" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Roles</p>
+      <h2>Topology</h2>
+    </div>
+    <div class="topology" role="img" aria-label="OpenShift fleet topology">
+      <div class="site">
+        <span class="site-label">DC</span>
+        <div class="node primary">
+          <strong>hub-dc</strong>
+          <span>active management hub</span>
+        </div>
+        <div class="node primary">
+          <strong>spoke-dc</strong>
+          <span>active workload cluster</span>
+        </div>
+      </div>
+      <div class="link">
+        <span>ACM, OADP, GitOps, DR runbooks</span>
+      </div>
+      <div class="site standby">
+        <span class="site-label">DR</span>
+        <div class="node">
+          <strong>hub-dr</strong>
+          <span>passive restore hub</span>
+        </div>
+        <div class="node">
+          <strong>spoke-dr</strong>
+          <span>workload standby</span>
+        </div>
+      </div>
+    </div>
+    <ul class="plain-list">
+      <li><strong>Management model:</strong> hub-dc manages the active fleet while hub-dr stays passive until an activation drill.</li>
+      <li><strong>Workload model:</strong> spoke-dc is active; spoke-dr is platform-ready standby, not yet a full hot app mirror.</li>
+      <li><strong>Source of truth:</strong> platform state lives in <code>lab-gitops-full/</code>; non-platform workloads live in <code>lab-workloads/</code>.</li>
+    </ul>
+  </section>
+
+  <section id="gitops" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Source control</p>
+      <h2>GitOps model</h2>
+    </div>
+    <table>
+      <thead>
+        <tr><th>Area</th><th>Repository</th><th>Purpose</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Platform desired state</td><td><code>lab-gitops-full/</code></td><td>Operators, cluster config, ACM, OADP, storage, service mesh, platform policy.</td></tr>
+        <tr><td>Application workloads</td><td><code>lab-workloads/</code></td><td>Demo and non-platform app bases, only deployed when referenced by overlays.</td></tr>
+        <tr><td>Bootstrap reference</td><td><code>lab-gitops/</code></td><td>Bootstrap-only context copied from ocp-bootstrap.</td></tr>
+      </tbody>
+    </table>
+    <p>
+      The repo boundary is deliberate. Platform operators and cluster lifecycle
+      stay in the platform repo. Demo app bases stay source-only until a cluster
+      overlay includes them.
+    </p>
+  </section>
+
+  <section id="hubs" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Management</p>
+      <h2>Management hubs</h2>
+    </div>
+    <div class="cards two">
+      <article class="card">
+        <div class="card-title"><span class="pill dc">Active</span><h3>hub-dc</h3></div>
+        <p>Active ACM hub. Root and cluster-config GitOps applications are recorded healthy after the latest remediation sequence.</p>
+        <dl>
+          <dt>Core services</dt><dd>ACM, MCE, OADP, LVMS, RHACS</dd>
+          <dt>Storage posture</dt><dd>Storage-light hub with LVMS retained</dd>
+          <dt>Risk focus</dt><dd>Fresh ACM backup freshness before any activation drill</dd>
+        </dl>
+      </article>
+      <article class="card">
+        <div class="card-title"><span class="pill dr">Passive</span><h3>hub-dr</h3></div>
+        <p>Passive restore hub. It is prepared for restore workflows, but should not be treated as active until a controlled drill.</p>
+        <dl>
+          <dt>Core services</dt><dd>ACM, MCE, OADP, LVMS, RHACS</dd>
+          <dt>Storage posture</dt><dd>Storage-light hub with LVMS retained</dd>
+          <dt>Risk focus</dt><dd>ACM/MCE image mirror or pre-pull readiness</dd>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section id="spokes" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Workloads</p>
+      <h2>Workload spokes</h2>
+    </div>
+    <div class="cards two">
+      <article class="card">
+        <div class="card-title"><span class="pill dc">Active</span><h3>spoke-dc</h3></div>
+        <p>Active workload cluster. AMQ/Kafka has been retired from the spoke desired state, and WSO2 IS was removed from identity integration.</p>
+        <dl>
+          <dt>Storage</dt><dd>ODF on intended localblock topology</dd>
+          <dt>Service mesh</dt><dd>OSSM 3 installed and healthy, app-idle</dd>
+          <dt>OAuth</dt><dd>Google only</dd>
+        </dl>
+      </article>
+      <article class="card">
+        <div class="card-title"><span class="pill dr">Standby</span><h3>spoke-dr</h3></div>
+        <p>Workload standby cluster. It has platform services ready, but no current user AI workloads or demo app workloads.</p>
+        <dl>
+          <dt>Storage</dt><dd>ODF compact LVMS topology ready</dd>
+          <dt>Service mesh</dt><dd>OSSM 3 installed and healthy, app-idle</dd>
+          <dt>AI</dt><dd>RHOAI operator installed, no DataScienceCluster</dd>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section id="platform" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Installed state</p>
+      <h2>Platform services</h2>
+    </div>
+    <div class="cards three">
+      <article class="card compact">
+        <h3>Storage</h3>
+        <p>Hubs are storage-light with LVMS. Spokes keep ODF for workload platform state.</p>
+      </article>
+      <article class="card compact">
+        <h3>Identity</h3>
+        <p>WSO2 IS was removed. Google and htpasswd remain depending on cluster role.</p>
+      </article>
+      <article class="card compact">
+        <h3>AI</h3>
+        <p>No user AI workloads were found. RHOAI platform artifacts remain only where intended or stale.</p>
+      </article>
+      <article class="card compact">
+        <h3>Demo apps</h3>
+        <p>No removable demo apps remain on the spokes. <code>demo-orders</code> was wiped from desired state.</p>
+      </article>
+      <article class="card compact">
+        <h3>AMQ/Kafka on spokes</h3>
+        <p>Retired from spoke desired state. Future Kafka use should target RKE2 Kafka.</p>
+      </article>
+      <article class="card compact">
+        <h3>Observability</h3>
+        <p>Hub observability stacks were reduced during storage-light cleanup; app telemetry work remains future onboarding.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="backup" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Resilience</p>
+      <h2>Backup and DR</h2>
+    </div>
+    <ol class="steps">
+      <li><strong>Backup freshness gate:</strong> create or wait for a fresh ACM hub backup that satisfies the agreed drill RPO.</li>
+      <li><strong>Image readiness:</strong> implement ACM/MCE image mirror or pre-pull so hub-dr can start quickly during site failure.</li>
+      <li><strong>Runbook validation:</strong> dry-run restore manifests and confirm passive hub state before promotion.</li>
+      <li><strong>Controlled activation:</strong> run the hub-dc to hub-dr activation drill only after all gates are clean.</li>
+    </ol>
+    <p>
+      General OADP daily backups completed on all four clusters in the latest
+      recorded run. The ACM hub backup freshness remains a drill gate because
+      a strict two-hour RPO can expire before the operator starts the drill.
+    </p>
+  </section>
+
+  <section id="service-mesh" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Traffic</p>
+      <h2>OpenShift Service Mesh 3</h2>
+    </div>
+    <p>
+      OSSM 3 is already deployed on both spokes. The platform is healthy but
+      application-idle: only <code>istio-ingress</code> is labeled for
+      injection, and no Bookinfo, metrics-demo, otel-demo, liberty-canary, or
+      demo-orders namespace currently exists on either spoke.
+    </p>
+    <div class="callout">
+      <strong>Next action:</strong> choose the workload to onboard, define the
+      spoke placement, then validate injection, Gateway/VirtualService routing,
+      Kiali graph, and telemetry.
+    </div>
+  </section>
+
+  <section id="apps" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Application path</p>
+      <h2>Java/JBoss app and Kafka integration</h2>
+    </div>
+    <p>
+      The planned demo app should be built as a non-platform workload in
+      <code>lab-workloads/</code>, deployed to the selected spoke overlay, and
+      wired into OSSM 3 when mesh behavior is part of the test.
+    </p>
+    <table>
+      <thead>
+        <tr><th>Dependency</th><th>Current state</th><th>Required before app use</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Kafka</td>
+          <td>RKE2 DC Kafka is healthy and reachable by IP/SNI on 443.</td>
+          <td>Add DNS for <code>bootstrap.kafka.apps.sub.comptech-lab.com</code> and <code>broker-*.kafka.apps.sub.comptech-lab.com</code>.</td>
+        </tr>
+        <tr>
+          <td>Client auth</td>
+          <td>Existing Kafka users are platform-oriented.</td>
+          <td>Create app-specific SCRAM user, ACLs, and secret handling.</td>
+        </tr>
+        <tr>
+          <td>Build path</td>
+          <td>Java/JBoss app not yet scaffolded.</td>
+          <td>Define image build, runtime config, service, route or mesh gateway, and health checks.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="roadmap" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Next work</p>
+      <h2>Roadmap</h2>
+    </div>
+    <div class="roadmap">
+      <article>
+        <span>1</span>
+        <h3>DR drill readiness</h3>
+        <p>Fresh ACM backup, image mirror or pre-pull, activation runbook validation.</p>
+      </article>
+      <article>
+        <span>2</span>
+        <h3>Kafka readiness</h3>
+        <p>Fix Kafka DNS and align documentation around the live 443 external path.</p>
+      </article>
+      <article>
+        <span>3</span>
+        <h3>Demo app onboarding</h3>
+        <p>Create the Java/JBoss workload base, configure Kafka, and validate in service mesh.</p>
+      </article>
+      <article>
+        <span>4</span>
+        <h3>Operational polish</h3>
+        <p>Keep session records, TODO, assessment, and wiki pages synchronized after each change.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="rules" class="panel">
+    <div class="section-head">
+      <p class="section-kicker">Governance</p>
+      <h2>Operating rules</h2>
+    </div>
+    <ul class="plain-list">
+      <li>Do not print secrets, kubeconfigs, pull secrets, kubeadmin passwords, or PAT values.</li>
+      <li>Use read-only checks before remediation so actions are not based on stale state.</li>
+      <li>Treat <code>lab-gitops-full/</code> as platform desired state and <code>lab-workloads/</code> as the workload repo.</li>
+      <li>Record live checks, live changes, file edits, validation, and residual risk in session reports.</li>
+      <li>Keep historical state explicit. Do not rediscover from scratch unless recorded state is stale or contradicted by live checks.</li>
+    </ul>
+  </section>
+
+  <footer class="page-footer">
+    <p>BRAC POC OCP wiki. Last content snapshot: 2026-05-06 UTC.</p>
+  </footer>
+</main>
+</body>
+</html>

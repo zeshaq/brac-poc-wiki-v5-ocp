@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://brac-poc-wiki-v5-ocp.pages.dev/sitemap.xml
+
