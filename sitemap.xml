@@ -4,16 +4,16 @@
     <loc>https://brac-poc-wiki-v5-ocp.pages.dev/</loc>
     <lastmod>2026-05-06</lastmod>
   </url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/topology.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/gitops.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/hub-dc.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/hub-dr.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/spoke-dc.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/spoke-dr.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/platform-services.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/backup-dr.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/service-mesh.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/apps-kafka.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/roadmap.html</loc><lastmod>2026-05-06</lastmod></url>
-  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/operating-rules.html</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/topology</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/gitops</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/hub-dc</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/hub-dr</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/spoke-dc</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/spoke-dr</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/platform-services</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/backup-dr</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/service-mesh</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/apps-kafka</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/roadmap</loc><lastmod>2026-05-06</lastmod></url>
+  <url><loc>https://brac-poc-wiki-v5-ocp.pages.dev/operating-rules</loc><lastmod>2026-05-06</lastmod></url>
 </urlset>
