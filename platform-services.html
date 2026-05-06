@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services" aria-current="page">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services" aria-current="page">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -35,9 +35,8 @@
         <tr><td>ACM Observability</td><td>Enabled on hubs for fleet metrics.</td><td>Both hubs are Ready. PVC requests were increased, but the lab still uses non-resilient <code>lvms-vg1</code>.</td></tr>
         <tr><td>Image pre-pull</td><td>Enabled on hubs as a short-term DR bridge.</td><td><code>openshift-image-prepull</code> warms selected ACM, MCE, GitOps, RHACS, ACM Observability, and OADP images. A durable mirror/IDMS remains open.</td></tr>
         <tr><td>Demo apps</td><td>No removable demo apps on spokes.</td><td><code>demo-orders</code> was wiped from desired state.</td></tr>
-        <tr><td>Kafka on OCP</td><td>Retired from spoke desired state.</td><td>Future app Kafka usage should target RKE2 Kafka after DNS and app credentials are ready.</td></tr>
         <tr><td>OADP</td><td>General daily backups complete in latest recorded run.</td><td>OADP backup health ServiceMonitors and alert rules now exist on all clusters.</td></tr>
-        <tr><td>Vault / external secrets</td><td>ESO installed and smoke-wired to RKE2 Vault.</td><td>All four clusters have a namespace-scoped <code>SecretStore/rke2-vault</code> and synced smoke <code>ExternalSecret</code>. Real app secrets still need namespace-specific Vault policies and roles.</td></tr>
+        <tr><td>Vault / external secrets</td><td>ESO installed and smoke-wired to external Vault.</td><td>All four clusters have a namespace-scoped <code>SecretStore/rke2-vault</code> and synced smoke <code>ExternalSecret</code>. Real app secrets still need namespace-specific Vault policies and roles.</td></tr>
       </tbody>
     </table>
   </section>
@@ -56,7 +55,7 @@
 
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Secrets</p><h2>Vault direction</h2></div>
-    <p>For this fleet, the selected pattern is to run Vault outside the OpenShift clusters as an HA shared secrets service, then connect each cluster through its own Kubernetes auth mount, policies, and short-lived roles. The current Vault endpoint is the RKE2-hosted <code>vault-rke2.apps.sub.comptech-lab.com</code> service.</p>
+    <p>For this fleet, the selected pattern is to run Vault outside the OpenShift clusters as an HA secrets service, then connect each cluster through its own Kubernetes auth mount, policies, and short-lived roles. The current OpenShift-facing Vault endpoint is <code>vault-rke2.apps.sub.comptech-lab.com</code>.</p>
     <p>External Secrets Operator is now installed on all four clusters and smoke-wired through <code>components/platform/external-secrets-vault</code>. The smoke path validates <code>SecretStore/rke2-vault</code>, <code>ExternalSecret/eso-vault-smoke</code>, and target Secret key creation on <code>hub-dc</code>, <code>hub-dr</code>, <code>spoke-dc</code>, and <code>spoke-dr</code>. No Vault token, TokenReview JWT, or application secret value is committed to Git.</p>
     <p>Use per-cluster Vaults only when clusters must survive long isolation windows, have separate trust boundaries, or cannot depend on a shared secrets control plane. For real application onboarding, create namespace-specific Vault policies and roles before committing non-secret SecretStore or ExternalSecret references.</p>
     <p><a href="/secrets-vault">Open the dedicated Secrets and Vault page</a>.</p>
@@ -66,8 +65,8 @@
     <div class="section-head"><p class="section-kicker">Retired or absent</p><h2>What should not reappear accidentally</h2></div>
     <ul class="plain-list">
       <li>WSO2 IS OAuth integration and its client secret on <code>spoke-dc</code>.</li>
-      <li><code>demo-orders</code> namespace, workload resources, KafkaUser, and orders topics.</li>
-      <li>AMQ Streams, Streams Console, Apicurio Registry, Strimzi CRDs, and <code>kafka</code> namespace on the OCP spokes.</li>
+      <li><code>demo-orders</code> namespace and workload resources.</li>
+      <li>Non-core application middleware previously tracked with demo workload material on the OCP spokes.</li>
       <li>Hub ODF/NooBaa, hub app logging/tracing test stacks, and hub MinIO/Loki/Tempo stacks removed by storage-light cleanup.</li>
       <li>User workload Prometheus and Thanos ruler pods on the management hubs.</li>
       <li>Any assumption that pre-pull replaces image mirroring; the durable recovery path still needs a DR-reachable registry mirror.</li>

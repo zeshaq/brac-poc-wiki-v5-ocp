@@ -27,11 +27,11 @@ Cloudflare Pages project:
 - `hub-dc.html`, `hub-dr.html`, `spoke-dc.html`, `spoke-dr.html` - per-cluster
   operating notes.
 - `platform-services.html` - platform capability and cleanup status.
-- `secrets-vault.html` - RKE2 Vault, ESO smoke wiring, scoped export token,
+- `secrets-vault.html` - external Vault, ESO smoke wiring,
   and application secret onboarding guardrails.
 - `backup-dr.html` - OADP and ACM activation drill gates.
 - `service-mesh.html` - OSSM 3 state and onboarding checklist.
-- `apps-kafka.html` - Java/JBoss app path and RKE2 Kafka readiness.
+- `app-onboarding.html` - Java/JBoss app path on OpenShift.
 - `roadmap.html` - current execution sequence and done signals.
 - `operating-rules.html` - safety and session-memory rules.
 - `assets/diagrams/` - static diagram assets.

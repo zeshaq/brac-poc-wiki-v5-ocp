@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="OpenShift application onboarding model for the BRAC POC OpenShift fleet.">
+<title>App Onboarding - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding" aria-current="page">App onboarding</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Workload onboarding</div>
+    <h1>Java/JBoss application path on OpenShift</h1>
+    <p>This page tracks only the OpenShift side of application onboarding: namespace ownership, image deployment, runtime configuration, health checks, service mesh opt-in, and GitOps promotion to the spokes.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Architecture</p><h2>Target OpenShift shape</h2></div>
+    <table>
+      <thead><tr><th>Layer</th><th>OpenShift object</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Namespace</td><td><code>Project</code> / <code>Namespace</code></td><td>Owned by the workload repo and placed only on the intended spoke cluster.</td></tr>
+        <tr><td>Runtime</td><td><code>Deployment</code></td><td>Java/JBoss image with requests, limits, probes, and rollout strategy.</td></tr>
+        <tr><td>Configuration</td><td><code>ConfigMap</code> plus Secret references</td><td>Non-secret runtime settings in Git; sensitive values supplied through ESO from external Vault.</td></tr>
+        <tr><td>Traffic</td><td><code>Service</code>, <code>Route</code>, or mesh gateway objects</td><td>Choose Route for simple ingress or mesh gateway resources when OSSM 3 routing is required.</td></tr>
+        <tr><td>Policy</td><td><code>NetworkPolicy</code>, placement, and backup labels</td><td>Restrict namespace traffic only after required ingress, egress, and platform paths are known.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">GitOps</p><h2>Repository boundary</h2></div>
+    <ul class="plain-list">
+      <li>Application manifests belong in the workload repository, not the platform repository.</li>
+      <li>Platform-owned shared controls such as operators, mesh control plane, backup platform, and ESO remain in the platform GitOps repository.</li>
+      <li>App overlays should target <code>spoke-dc</code> first unless an explicit DR placement decision is made.</li>
+      <li>Keep secret values, pull secrets, and full Secret manifests out of Git.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Checklist</p><h2>Before first deployment</h2></div>
+    <ul class="plain-list">
+      <li><strong>Create namespace:</strong> include ownership labels, backup labels, and monitoring labels as required.</li>
+      <li><strong>Add workload manifests:</strong> Deployment, Service, Route or Gateway, ConfigMap, probes, resource requests, and service account.</li>
+      <li><strong>Wire secrets:</strong> create app-specific Vault policy, Vault role, and ExternalSecret references using the validated ESO pattern.</li>
+      <li><strong>Choose mesh mode:</strong> opt the namespace into OSSM 3 ambient mode only when workload routing and telemetry expectations are clear.</li>
+      <li><strong>Define DR posture:</strong> decide whether <code>spoke-dr</code> is restore target, passive standby, or active-passive mirror for the app.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Out of scope</p><h2>Non-OpenShift dependencies</h2></div>
+    <p>Application-specific external services are not tracked in this OpenShift wiki unless they are required to explain OpenShift placement, secret delivery, routing, monitoring, backup behavior, or recovery. Keep this section limited to OpenShift-facing requirements and links.</p>
+  </section>
+
+  <p class="next-link"><a href="/roadmap">Next: roadmap</a></p>
+</main>
+</body>
+</html>

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1120" height="680" viewBox="0 0 1120 680" role="img" aria-labelledby="title desc">
   <title id="title">BRAC POC OpenShift fleet topology</title>
-  <desc id="desc">DC and DR OpenShift hubs and spokes with RKE2 shared services used by Vault, Kafka, MinIO, and GitLab.</desc>
+  <desc id="desc">DC and DR OpenShift hubs and spokes with core external dependencies used by OpenShift operations.</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <path d="M 0 0 L 10 5 L 0 10 z" fill="#526174"/>
@@ -59,8 +59,8 @@
   <text class="small" x="707" y="420">Platform-ready, not hot app mirror</text>
 
   <rect class="service" x="330" y="545" width="460" height="92" rx="14"/>
-  <text class="service-label" x="370" y="586">RKE2 shared services</text>
-  <text class="service-small" x="370" y="616">Vault, Kafka, MinIO, GitLab, HAProxy edge</text>
+  <text class="service-label" x="370" y="586">Core external dependencies</text>
+  <text class="service-small" x="370" y="616">Vault, MinIO, GitOps source, identity, edge ingress</text>
 
   <path class="edge-accent" d="M 275 258 C 275 285 275 295 275 322"/>
   <text class="edge-text" x="296" y="294">ACM manages active spoke</text>
@@ -80,5 +80,5 @@
   <path class="edge-accent" d="M 610 545 C 690 455 765 325 820 258"/>
   <text class="edge-text" x="102" y="515">Vault ESO smoke path</text>
   <text class="edge-text" x="792" y="515">Vault ESO smoke path</text>
-  <text class="edge-text" x="420" y="512">future Kafka app dependency</text>
+  <text class="edge-text" x="420" y="512">GitOps / backup / ingress path</text>
 </svg>

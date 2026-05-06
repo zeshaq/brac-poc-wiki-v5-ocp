@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules" aria-current="page">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/roadmap">Roadmap</a><a href="/operating-rules" aria-current="page">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -22,6 +22,15 @@
     <h1>Operating rules</h1>
     <p>These rules keep the lab recoverable and make future sessions resume from recorded state instead of rediscovering from scratch.</p>
   </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Scope</p><h2>OpenShift-only boundary</h2></div>
+    <ul class="plain-list">
+      <li>This wiki is only for OpenShift clusters, OpenShift GitOps, OpenShift operators, OpenShift workloads, and OpenShift operational runbooks.</li>
+      <li>External tools appear only when they directly support OpenShift core operations: external Vault for secrets, MinIO or object storage for backup and observability, GitOps source control, identity such as future Keycloak, or edge ingress and DNS required for OpenShift routes.</li>
+      <li>Do not use this wiki for general non-OpenShift cataloguing, application middleware internals, or external service operations that do not change OpenShift placement, security, backup, monitoring, routing, or recovery.</li>
+    </ul>
+  </section>
 
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Safety</p><h2>Non-negotiables</h2></div>
@@ -48,7 +57,7 @@
       <li>Cluster role, topology, or DR semantics change.</li>
       <li>A platform service is added, removed, or materially remediated.</li>
       <li>A roadmap gate moves from blocked to passing or starts active execution.</li>
-      <li>The Java/JBoss app architecture, Kafka dependency, or service mesh onboarding path changes.</li>
+      <li>The Java/JBoss app architecture, OpenShift secret delivery, routing, DR posture, or service mesh onboarding path changes.</li>
       <li>A session discovers a risk that a project reader should see without reading raw session logs.</li>
     </ul>
   </section>
@@ -57,4 +66,3 @@
 </main>
 </body>
 </html>
-

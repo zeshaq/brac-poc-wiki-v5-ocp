@@ -12,21 +12,21 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams" aria-current="page">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams" aria-current="page">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
 <main id="main" class="content diagram-detail">
   <header class="page-header">
     <div class="eyebrow">Diagram</div>
-    <h1>Fleet topology and shared services</h1>
-    <p>Current OCP management and workload placement, including the RKE2 shared-service dependency path for Vault, Kafka, MinIO, GitLab, and the edge HAProxy.</p>
+    <h1>Fleet topology and core dependencies</h1>
+    <p>Current OCP management and workload placement, including only external dependencies that directly support OpenShift operations: secrets, backup/object storage, GitOps source, identity, and edge ingress.</p>
   </header>
 
   <section class="panel">
     <figure class="diagram-figure">
-      <img class="diagram-image diagram-image-large" src="assets/diagrams/fleet-topology.svg" alt="DC and DR OpenShift topology with RKE2 shared service dependencies">
-      <figcaption>DC runs the active management and workload side. DR remains restore-ready and platform standby. RKE2 provides shared services consumed by the OpenShift fleet.</figcaption>
+      <img class="diagram-image diagram-image-large" src="assets/diagrams/fleet-topology.svg" alt="DC and DR OpenShift topology with core external operational dependencies">
+      <figcaption>DC runs the active management and workload side. DR remains restore-ready and platform standby. External systems are shown only where they support OpenShift core operations.</figcaption>
     </figure>
   </section>
 
@@ -44,16 +44,16 @@
     SDR["spoke-dr&lt;br/&gt;workload standby"]
   end
 
-  RKE2["RKE2 shared services&lt;br/&gt;Vault, Kafka, MinIO, GitLab, HAProxy edge"]
+  EXT["Core external dependencies&lt;br/&gt;Vault, MinIO, GitOps source, identity, edge ingress"]
 
   HDC -- "ACM manages active spoke" --&gt; SDC
   HDC -. "ACM backup and activation path" .-&gt; HDR
   SDC -. "standby placement decision" .-&gt; SDR
   HDR -. "restore hub later manages DR" .-&gt; SDR
-  RKE2 -- "Vault ESO smoke path" --&gt; HDC
-  RKE2 -- "Vault ESO smoke path" --&gt; HDR
-  RKE2 -- "Vault and future Kafka dependency" --&gt; SDC
-  RKE2 -- "Vault ESO smoke path" --&gt; SDR</code></pre>
+  EXT -- "Vault ESO path" --&gt; HDC
+  EXT -- "Vault ESO path" --&gt; HDR
+  EXT -- "GitOps / backup / ingress path" --&gt; SDC
+  EXT -- "Vault ESO path" --&gt; SDR</code></pre>
   </section>
 
   <p class="next-link"><a href="/diagrams">Back to diagrams</a></p>

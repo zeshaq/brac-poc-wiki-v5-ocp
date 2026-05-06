@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr" aria-current="page">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr" aria-current="page">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -40,7 +40,7 @@
       <li>Velero has retry hardening: <code>AWS_RETRY_MODE=standard</code>, <code>AWS_MAX_ATTEMPTS=10</code>, and a 512Mi memory request.</li>
       <li>Latest recorded daily series completed across all four clusters.</li>
       <li>Backup health alerting now watches stale, failed, partially failed, and warning-producing <code>lab-daily</code> backups.</li>
-      <li>RKE2 Vault logical export now uses a scoped periodic token and self-renewing replication scripts; this supports future secret recovery checks without relying on a root-token repair.</li>
+      <li>External Vault logical export now uses a scoped periodic token and self-renewing replication scripts; this supports future OpenShift secret recovery checks without relying on a root-token repair.</li>
       <li>Residual watch item: hub-dr archive persistence to shared MinIO can be slow; cluster-to-MinIO health checks had intermittent timeout samples.</li>
     </ul>
   </section>

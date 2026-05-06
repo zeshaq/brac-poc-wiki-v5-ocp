@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops" aria-current="page">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops" aria-current="page">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -47,7 +47,7 @@
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Current repo facts</p><h2>Recent boundaries enforced</h2></div>
     <ul class="plain-list">
-      <li><code>demo-orders</code> was removed from <code>lab-workloads</code> and inactive Kafka fixtures were removed from <code>lab-gitops-full</code>.</li>
+      <li><code>demo-orders</code> was removed from <code>lab-workloads</code>; inactive non-core app middleware fixtures were removed from OpenShift desired state.</li>
       <li>AMQ Streams, Streams Console, and Apicurio Registry were removed from live spoke desired state.</li>
       <li>Hub storage-light work removed ODF/NooBaa, Pipelines, logging, tracing, MinIO/Loki/Tempo, and app observability test stacks from hubs while retaining LVMS and RHACS.</li>
       <li>ACM Observability was added back as a hub management service through <code>components/platform/acm-observability</code>; its object-store Secret remains local-only.</li>
@@ -55,7 +55,7 @@
       <li>ACM Observability-managed mutations to <code>cluster-monitoring-config</code> are ignored by Argo so the operator can own Alertmanager/external label wiring while GitOps still disables hub user workload monitoring.</li>
       <li>Backup health ServiceMonitors and PrometheusRules are now part of the OADP and ACM backup bases.</li>
       <li><code>components/platform/hub-image-prepull</code> warms selected hub recovery images but does not replace durable image mirroring.</li>
-      <li><code>components/platform/external-secrets-vault</code> defines the non-secret OpenShift side of the RKE2 Vault integration: service accounts, TokenReview RBAC, <code>SecretStore/rke2-vault</code>, and the smoke <code>ExternalSecret</code>.</li>
+      <li><code>components/platform/external-secrets-vault</code> defines the non-secret OpenShift side of the external Vault integration: service accounts, TokenReview RBAC, <code>SecretStore/rke2-vault</code>, and the smoke <code>ExternalSecret</code>.</li>
       <li>Vault tokens, TokenReview JWTs, app secret values, and full Secret manifests remain outside Git.</li>
       <li><code>lab-gitops-full/CHANGELOG.md</code> must be updated when desired-state changes occur.</li>
     </ul>

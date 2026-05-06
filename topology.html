@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology" aria-current="page">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology" aria-current="page">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -46,7 +46,7 @@
       <tbody>
         <tr><td><code>hub-dc</code></td><td>Active management hub</td><td>ACM/MCE, OADP, GitOps, RHACS, LVMS retained.</td><td>ACM backup freshness before drill.</td></tr>
         <tr><td><code>hub-dr</code></td><td>Passive restore hub</td><td>Restore-ready hub with local GitOps app and no active restore ownership.</td><td>ACM/MCE image mirror or pre-pull readiness.</td></tr>
-        <tr><td><code>spoke-dc</code></td><td>Active workload cluster</td><td>ODF on localblock, OSSM 3 healthy, no demo app workloads currently present.</td><td>App onboarding and RKE2 Kafka client readiness.</td></tr>
+        <tr><td><code>spoke-dc</code></td><td>Active workload cluster</td><td>ODF on localblock, OSSM 3 healthy, no demo app workloads currently present.</td><td>App onboarding, mesh opt-in, and workload policy readiness.</td></tr>
         <tr><td><code>spoke-dr</code></td><td>Workload standby</td><td>ODF compact LVMS topology, OSSM 3 healthy, RHOAI operator installed without user AI workloads.</td><td>Define whether standby becomes app-ready hot mirror.</td></tr>
       </tbody>
     </table>
@@ -58,7 +58,7 @@
       <article class="card"><h3>Management ownership</h3><p><code>hub-dc</code> is the active hub. <code>hub-dr</code> should remain passive until a controlled activation drill. The recorded placement model no longer treats <code>hub-dr</code> as a managed cluster on <code>hub-dc</code>.</p></article>
       <article class="card"><h3>Workload placement</h3><p><code>spoke-dc</code> is active. <code>spoke-dr</code> is standby with platform services, not currently a full app mirror. That distinction matters before any application DR statement is made.</p></article>
       <article class="card"><h3>Traffic and platform</h3><p>OSSM 3 is installed on both spokes. Workload routing and telemetry remain app onboarding work, not platform installation work.</p></article>
-      <article class="card"><h3>Data dependencies</h3><p>AMQ/Kafka has been retired from OCP spokes. Future app Kafka consumption should use RKE2 Kafka once DNS and app-specific credentials are ready.</p></article>
+      <article class="card"><h3>External boundaries</h3><p>External systems are documented here only when they directly support OpenShift operations, such as external Vault for secrets, MinIO for backup/object storage, GitOps source control, identity, or edge ingress.</p></article>
     </div>
   </section>
 
