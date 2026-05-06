@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Red Hat and OpenShift production-readiness source checklist mapped to BRAC POC gate analysis.">
+<title>Production Readiness - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/production-readiness" aria-current="page">Production readiness</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Readiness gates</div>
+    <h1>Production readiness checklist</h1>
+    <p>Red Hat does not publish one universal production-readiness checklist for every OpenShift environment. This page turns the relevant Red Hat and OpenShift guidance into local gates we will analyze, validate, and implement for the BRAC POC fleet.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Source set</p><h2>Official guidance to track</h2></div>
+    <table>
+      <thead><tr><th>Source</th><th>Use in this wiki</th></tr></thead>
+      <tbody>
+        <tr><td><a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html-single/installation_overview/installation_overview">OCP 4.20 installation overview</a></td><td>Production clusters must be prepared with persistent storage, identity provider integration, and core platform monitoring before users consume the cluster.</td></tr>
+        <tr><td><a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/scalability_and_performance/scalability-and-performance-overview">OCP 4.20 scalability and performance</a></td><td>Control plane, infrastructure, object limits, latency, capacity, and scale practices.</td></tr>
+        <tr><td><a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html-single/etcd/etcd">OCP 4.20 etcd</a></td><td>etcd health, backup, restore, performance, defragmentation, and multi-site caution areas.</td></tr>
+        <tr><td><a href="https://docs.redhat.com/en/documentation/openshift_container_platform/4.20/html/monitoring/getting-started">OCP 4.20 monitoring</a></td><td>Supported monitoring customization, alert receivers, and persistent storage for monitoring high availability.</td></tr>
+        <tr><td><a href="https://access.redhat.com/solutions/7004992">Red Hat OpenShift 4 upgrade pre-checks</a></td><td>Practical operator, update path, removed API, etcd backup, must-gather, ODF, and virtualization checks before major operational changes.</td></tr>
+        <tr><td><a href="https://access.redhat.com/articles/3220991">Red Hat multi-site OpenShift guidance</a></td><td>Subscription-gated guidance for OpenShift clusters or designs spanning sites, regions, data centers, or non-ideal network conditions.</td></tr>
+        <tr><td><a href="https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.20/html/configuring_openshift_data_foundation_disaster_recovery_for_openshift_workloads/introduction-to-odf-dr-solutions_common">ODF 4.20 DR introduction</a></td><td>RPO/RTO framing and distinctions between Metro-DR, Regional-DR, and stretch cluster approaches.</td></tr>
+        <tr><td><a href="https://docs.redhat.com/en/documentation/red_hat_openshift_data_foundation/4.20/html/configuring_openshift_data_foundation_disaster_recovery_for_openshift_workloads/rdr-solution">ODF Regional-DR solution</a></td><td>Regional-DR workflow using RHACM hub plus two managed OpenShift clusters for failover and failback.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Gate model</p><h2>Local readiness gates to analyze</h2></div>
+    <ol class="steps">
+      <li><strong>Core cluster health:</strong> ClusterVersion healthy, ClusterOperators healthy, all expected nodes Ready, MachineConfigPools stable, no persistent critical alerts, and no unresolved ODF/RHACS/OLM blockers.</li>
+      <li><strong>Production integrations:</strong> persistent storage, OAuth/identity provider, supported monitoring configuration, alert receivers, default ingress, DNS, certificates, and route exposure are explicit.</li>
+      <li><strong>etcd and platform backup:</strong> etcd backup process is current, restorable, stored off-cluster, and matched to the OpenShift version; backup and restore commands are documented.</li>
+      <li><strong>OADP and ACM backup:</strong> DPA/BSL objects are available, backup schedules meet agreed RPO, backup health alerts fire, and restore dry-runs are part of drill entry criteria.</li>
+      <li><strong>Upgrade and lifecycle readiness:</strong> update path, operator compatibility, removed APIs, must-gather, support case boundaries, and maintenance windows are checked before upgrades or disruptive drills.</li>
+      <li><strong>Image and disconnected readiness:</strong> DR paths do not depend on slow public pulls; mirror, IDMS/ITMS, CatalogSource, registry CA, and pull-secret handling are in desired state or explicitly accepted as a lab limitation.</li>
+      <li><strong>Security and secrets:</strong> admin access, RBAC, kubeadmin retirement path, Vault/ESO boundaries, RHACS posture, no static app secrets in Git, and audit evidence are tracked.</li>
+      <li><strong>Observability and operations:</strong> platform monitoring storage, Alertmanager routing, logging, tracing, ACM Observability, runbooks, session evidence, and project tracking are maintained.</li>
+      <li><strong>Regional-DR readiness:</strong> ODF Advanced entitlement, ACM hub, two managed clusters, network reachability, Submariner/CIDR decisions, DRPolicy, protected app, planned relocate, unplanned failover, failback, and RPO/RTO evidence are proven.</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Implementation queue</p><h2>How these gates become work</h2></div>
+    <ul class="plain-list">
+      <li><strong>Analyze:</strong> compare each gate against live evidence and current desired state before creating remediation changes.</li>
+      <li><strong>Track:</strong> use GitHub Issues and milestones for bounded work, but keep desired state in <code>lab-gitops-full/</code> or <code>lab-workloads/</code>.</li>
+      <li><strong>Implement:</strong> make platform changes through GitOps unless a live break-glass fix is explicitly approved.</li>
+      <li><strong>Validate:</strong> capture read-only command evidence, alert evidence, dry-run output, and drill outcomes in local session reports.</li>
+      <li><strong>Promote:</strong> only mark a gate passing when the live check, desired-state check, and runbook evidence agree.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Current fit</p><h2>Known BRAC POC mapping</h2></div>
+    <table>
+      <thead><tr><th>Gate</th><th>Current local direction</th></tr></thead>
+      <tbody>
+        <tr><td>Core cluster health</td><td>Recent focused check found all clusters on OCP <code>4.20.18</code> with healthy ClusterVersion and Ready nodes, but live exceptions must be rechecked.</td></tr>
+        <tr><td>Production integrations</td><td>Vault/ESO smoke is complete; ACM Observability is Ready; production storage and alert receiver decisions still need hardening.</td></tr>
+        <tr><td>Backup and restore</td><td>General OADP daily backups complete; ACM backup freshness still needs a strict RPO gate before hub drills.</td></tr>
+        <tr><td>Image readiness</td><td>Hub pre-pull is a useful bridge; durable mirror/IDMS remains an active gate for hub and spoke recovery images.</td></tr>
+        <tr><td>Regional DR</td><td><code>ODF Regional-DR POC</code> milestone now phases the work from scope through hot-standby certification for <code>spoke-dc</code> to <code>spoke-dr</code>.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <p class="next-link"><a href="/roadmap">Next: roadmap</a></p>
+</main>
+</body>
+</html>

@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/roadmap" aria-current="page">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/production-readiness">Production readiness</a><a href="/roadmap" aria-current="page">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
 </aside>
@@ -30,6 +30,18 @@
       <article><span>2</span><h3>Kubernetes auth</h3><p>Vault has one Kubernetes auth mount per OpenShift cluster for ESO login boundaries.</p></article>
       <article><span>3</span><h3>ESO smoke path</h3><p><code>SecretStore/rke2-vault</code> and <code>ExternalSecret/eso-vault-smoke</code> are Ready on all four clusters.</p></article>
     </div>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Readiness framework</p><h2>Production gate analysis</h2></div>
+    <table>
+      <thead><tr><th>Track</th><th>Next step</th><th>Done signal</th></tr></thead>
+      <tbody>
+        <tr><td>Gate source</td><td>Use the <a href="/production-readiness">production readiness checklist</a> as the local analysis page.</td><td>Every gate has an evidence source, owner, remediation path, and accepted risk state.</td></tr>
+        <tr><td>Hub DR</td><td>Map hub-dc to hub-dr drill readiness against backup, image, observability, and lifecycle gates.</td><td>Drill entry criteria pass without relying on stale backup or slow public image pulls.</td></tr>
+        <tr><td>Regional DR</td><td>Map spoke-dc to spoke-dr hot standby against ODF Advanced Regional-DR gates.</td><td>Protected workload relocate, failover, failback, and hot-standby operations have captured evidence.</td></tr>
+      </tbody>
+    </table>
   </section>
 
   <section class="panel">

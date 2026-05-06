@@ -34,6 +34,8 @@ Cloudflare Pages project:
 - `backup-dr.html` - OADP and ACM activation drill gates.
 - `service-mesh.html` - OSSM 3 state and onboarding checklist.
 - `app-onboarding.html` - Java/JBoss app path on OpenShift.
+- `production-readiness.html` - official Red Hat/OpenShift guidance mapped to
+  local production readiness gates.
 - `roadmap.html` - current execution sequence and done signals.
 - `operating-rules.html` - safety and session-memory rules.
 - `assets/diagrams/` - static diagram assets.
