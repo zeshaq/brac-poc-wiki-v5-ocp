@@ -31,6 +31,7 @@
       <dt>GitOps</dt><dd>Uses local <code>hub-dr-cluster-config</code> Application rather than hub-propagated managed pull GitOps.</dd>
       <dt>Restore posture</dt><dd>No active <code>BackupSchedule</code> or <code>Restore</code> should exist during passive state.</dd>
       <dt>Storage</dt><dd>LVMS retained with pinned devices <code>/dev/vdb</code>, <code>/dev/vdc</code>, and <code>/dev/vdd</code>.</dd>
+      <dt>User workload metrics</dt><dd>Disabled by <code>cluster-monitoring-config</code>; no user workload monitoring pods should run on this hub.</dd>
     </dl>
   </section>
 
