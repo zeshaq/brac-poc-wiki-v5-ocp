@@ -32,7 +32,7 @@
       <dt>Restore posture</dt><dd>No active <code>BackupSchedule</code> or <code>Restore</code> should exist during passive state.</dd>
       <dt>Storage</dt><dd>LVMS retained with pinned devices <code>/dev/vdb</code>, <code>/dev/vdc</code>, and <code>/dev/vdd</code>.</dd>
       <dt>User workload metrics</dt><dd>Disabled by <code>cluster-monitoring-config</code>; no user workload monitoring pods should run on this hub.</dd>
-      <dt>ACM Observability</dt><dd>Enabled in desired state. Current rollout is waiting on slow or failed Red Hat registry image pulls for Grafana.</dd>
+      <dt>ACM Observability</dt><dd>Enabled and <code>Ready=True</code>. The previous Grafana image pull blocker is resolved.</dd>
     </dl>
   </section>
 
@@ -40,7 +40,7 @@
     <div class="section-head"><p class="section-kicker">Blockers</p><h2>Before activation</h2></div>
     <ol class="steps">
       <li><strong>Fresh active-hub backup:</strong> prove all critical ACM backup streams meet the agreed RPO.</li>
-      <li><strong>Image readiness:</strong> mirror or pre-pull ACM/MCE images that were previously slow to pull.</li>
+      <li><strong>Image readiness:</strong> finish current pre-pull warm-up, then build a durable mirror/IDMS for recovery images.</li>
       <li><strong>Dry-run restore:</strong> server-side dry-run restore manifests before real activation.</li>
       <li><strong>Ownership check:</strong> confirm no managed cluster will be dual-owned after activation.</li>
     </ol>
@@ -48,7 +48,7 @@
 
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Image risk</p><h2>Known slow pull classes</h2></div>
-    <p>Prior recovery exposed slow startup for large ACM/MCE images. The durable fix is a DR-reachable mirror with IDMS/ITMS, CatalogSource, registry CA, and pull-secret handling committed to desired state. A temporary pre-pull DaemonSet can reduce drill risk while the mirror is built.</p>
+    <p>Prior recovery exposed slow startup for large ACM/MCE images. A hub pre-pull DaemonSet now exists in <code>openshift-image-prepull</code> as a short-term bridge. The durable fix is still a DR-reachable mirror with IDMS/ITMS, CatalogSource, registry CA, and pull-secret handling committed to desired state.</p>
     <ul class="plain-list">
       <li><code>acm-cli-rhel9</code></li>
       <li><code>hive-rhel9</code></li>
@@ -63,6 +63,8 @@
 oc -n open-cluster-management get mch
 oc get mce
 oc -n open-cluster-management-backup get dpa,bsl,backupschedule,restore
+oc -n open-cluster-management-observability get pods
+oc -n openshift-image-prepull get ds,pods
 oc get imagedigestmirrorset,imagetagmirrorset,imagecontentsourcepolicy
 oc get ds -A | egrep -i 'pre.?pull|warm|mirror|acm|mce'</code></pre>
   </section>

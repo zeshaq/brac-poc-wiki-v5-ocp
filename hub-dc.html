@@ -28,11 +28,11 @@
     <dl class="wide">
       <dt>Role</dt><dd>Active management hub.</dd>
       <dt>OpenShift</dt><dd>Recorded baseline is <code>4.20.18</code>.</dd>
-      <dt>GitOps</dt><dd>Root and <code>hub-dc-cluster-config</code> recorded <code>Synced/Healthy</code> after the latest remediation sequence.</dd>
-      <dt>ACM backup</dt><dd><code>acm-dpa</code> reconciled, <code>acm-dpa-1</code> available, <code>hub-backup-daily</code> enabled.</dd>
+      <dt>GitOps</dt><dd>Root is <code>Synced/Healthy</code>. <code>hub-dc-cluster-config</code> is <code>Synced/Progressing</code> while image pre-pull completes.</dd>
+      <dt>ACM backup</dt><dd><code>acm-dpa</code> reconciled, <code>acm-dpa-1</code> available, <code>hub-backup-daily</code> enabled, with backup health alerts added.</dd>
       <dt>Managed clusters</dt><dd><code>hub-dr</code> is no longer a managed cluster on <code>hub-dc</code>. Current managed pull placement selects spokes only.</dd>
       <dt>User workload metrics</dt><dd>Disabled by <code>cluster-monitoring-config</code>; no user workload monitoring pods should run on this hub.</dd>
-      <dt>ACM Observability</dt><dd>Enabled and recorded <code>Ready=True</code>. Grafana is part of the ACM Observability stack.</dd>
+      <dt>ACM Observability</dt><dd>Enabled and recorded <code>Ready=True</code>. Grafana is part of the ACM Observability stack. PVC requests were increased, but still use lab-local LVMS.</dd>
     </dl>
   </section>
 
@@ -49,7 +49,8 @@
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Risk</p><h2>Operational watch items</h2></div>
     <div class="detail-grid">
-      <article class="card"><h3>Backup freshness</h3><p>Daily ACM backups complete, but the latest recorded backup can still fail a strict two-hour drill RPO. Create a fresh backup immediately before an activation drill unless a looser RPO is accepted.</p></article>
+      <article class="card"><h3>Backup health</h3><p>ACM and OADP backup health alerts now exist. Validate alert behavior before using them as a DR drill gate.</p></article>
+      <article class="card"><h3>Image pre-pull</h3><p>The hub image pre-pull DaemonSet is warming selected recovery images. It is a bridge until durable mirroring is built.</p></article>
       <article class="card"><h3>GitOps status artifacts</h3><p>Hub-side managed-pull status for <code>spoke-dr-cluster-config</code> can remain confusing or stale. Prefer local spoke Argo status for managed-pull app truth.</p></article>
       <article class="card"><h3>Network history</h3><p>A previous GitLab reachability issue was caused by stale conflicting IPs on the HAProxy VM. That was remediated and GitLab route reachability was validated.</p></article>
       <article class="card"><h3>Drill ownership</h3><p>Do not begin restore activation from hub-dc to hub-dr without explicit approval because managed cluster ownership can move.</p></article>
@@ -63,6 +64,8 @@ oc get clusterversion
 oc -n open-cluster-management get mch
 oc get mce
 oc -n open-cluster-management-backup get dpa,bsl,backupschedule
+oc -n open-cluster-management-backup get servicemonitor,prometheusrule
+oc -n openshift-image-prepull get ds,pods
 oc -n openshift-gitops get applications.argoproj.io</code></pre>
   </section>
 

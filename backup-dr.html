@@ -27,7 +27,7 @@
     <div class="section-head"><p class="section-kicker">Drill gates</p><h2>Current sequence</h2></div>
     <ol class="steps">
       <li><strong>Fresh ACM hub backup:</strong> all critical backup streams must meet the agreed RPO.</li>
-      <li><strong>ACM/MCE image readiness:</strong> mirror or pre-pull required images on hub-dr before activation.</li>
+      <li><strong>Image readiness:</strong> wait for hub pre-pull to finish, then build the durable mirror/IDMS path.</li>
       <li><strong>Activation preflight:</strong> prove hub-dr has no active BackupSchedule/Restore and restore manifests dry-run cleanly.</li>
       <li><strong>Controlled activation:</strong> proceed only after explicit user approval because ownership can move.</li>
     </ol>
@@ -39,6 +39,7 @@
       <li>General OADP daily schedules are staggered: hub-dc at <code>0 2 * * *</code>, hub-dr at <code>20 2 * * *</code>, spoke-dc at <code>40 2 * * *</code>, and spoke-dr at <code>0 3 * * *</code>.</li>
       <li>Velero has retry hardening: <code>AWS_RETRY_MODE=standard</code>, <code>AWS_MAX_ATTEMPTS=10</code>, and a 512Mi memory request.</li>
       <li>Latest recorded daily series completed across all four clusters.</li>
+      <li>Backup health alerting now watches stale, failed, partially failed, and warning-producing <code>lab-daily</code> backups.</li>
       <li>Residual watch item: hub-dr archive persistence to shared MinIO can be slow; cluster-to-MinIO health checks had intermittent timeout samples.</li>
     </ul>
   </section>
@@ -58,14 +59,27 @@
   </section>
 
   <section class="panel">
+    <div class="section-head"><p class="section-kicker">Alerting</p><h2>Backup health controls</h2></div>
+    <ul class="plain-list">
+      <li><code>oadp-backup-health</code> runs in <code>openshift-adp</code> on all four clusters.</li>
+      <li><code>acm-backup-health</code> runs in <code>open-cluster-management-backup</code> on the active hub.</li>
+      <li>Platform Prometheus has confirmed Velero backup timestamp metrics for the new scrape targets.</li>
+      <li>Validate alert behavior through an actual stale/failure cycle before treating this as a completed DR gate.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
     <div class="section-head"><p class="section-kicker">Validation</p><h2>Read-only checks</h2></div>
     <pre class="command"><code>export KUBECONFIG=&lt;hub-dc-kubeconfig&gt;
 oc -n open-cluster-management-backup get dpa,bsl
 oc -n open-cluster-management-backup get backupschedule hub-backup-daily -o jsonpath="{.status.phase}{'\n'}{.status.veleroScheduleCredentials.status.lastBackup}{'\n'}{.status.veleroScheduleManagedClusters.status.lastBackup}{'\n'}{.status.veleroScheduleResources.status.lastBackup}{'\n'}"
 oc -n open-cluster-management-backup get backups.velero.io --sort-by=.status.startTimestamp | tail -12
+oc -n open-cluster-management-backup get servicemonitor,prometheusrule
+oc -n openshift-adp get servicemonitor,prometheusrule
 
 export KUBECONFIG=&lt;hub-dr-kubeconfig&gt;
 oc -n open-cluster-management-backup get backupschedule,restore
+oc -n openshift-image-prepull get ds,pods
 oc get imagedigestmirrorset,imagetagmirrorset,imagecontentsourcepolicy</code></pre>
   </section>
 

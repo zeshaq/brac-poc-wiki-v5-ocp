@@ -60,7 +60,7 @@
       restore hub <code>hub-dr</code> is passive. <code>spoke-dc</code> is the
       active workload cluster, while <code>spoke-dr</code> is platform-ready
       standby. The immediate operational queue is DR drill readiness, Kafka
-      DNS readiness for future app consumption, ACM Observability convergence,
+      DNS readiness for future app consumption, durable hub image mirroring,
       and OSSM 3 workload onboarding.
     </p>
   </section>
@@ -92,11 +92,11 @@
       <h2>Items to watch</h2>
     </div>
     <ul class="plain-list">
-      <li><strong>ACM backup freshness:</strong> daily ACM backups complete, but a strict two-hour activation RPO can expire before a drill starts.</li>
-      <li><strong>ACM/MCE image readiness:</strong> hub-dr needs a mirror or pre-pull path for large ACM/MCE images before a controlled activation drill.</li>
+      <li><strong>Backup health:</strong> OADP and ACM backup Prometheus rules now exist, but alert behavior still needs validation before a drill.</li>
+      <li><strong>Image readiness:</strong> a hub pre-pull DaemonSet is warming selected recovery images; a durable mirror/IDMS remains required.</li>
       <li><strong>RKE2 Kafka DNS:</strong> Kafka is reachable by IP/SNI on 443, but the advertised Kafka ingress hostnames do not resolve yet.</li>
       <li><strong>OSSM 3 usage:</strong> both spokes have healthy OSSM 3 control planes, but no application workload is currently onboarded.</li>
-      <li><strong>ACM Observability:</strong> hub-dc is Ready; hub-dr is still converging because of slow/failed image pulls.</li>
+      <li><strong>ACM Observability storage:</strong> both hubs are Ready with larger PVC requests, but still use lab-local LVMS rather than resilient production storage.</li>
       <li><strong>spoke-dr semantics:</strong> current posture is platform standby, not a full hot workload mirror.</li>
     </ul>
   </section>

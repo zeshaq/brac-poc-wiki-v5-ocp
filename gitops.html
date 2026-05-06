@@ -51,7 +51,10 @@
       <li>AMQ Streams, Streams Console, and Apicurio Registry were removed from live spoke desired state.</li>
       <li>Hub storage-light work removed ODF/NooBaa, Pipelines, logging, tracing, MinIO/Loki/Tempo, and app observability test stacks from hubs while retaining LVMS and RHACS.</li>
       <li>ACM Observability was added back as a hub management service through <code>components/platform/acm-observability</code>; its object-store Secret remains local-only.</li>
-      <li>The ACS Critical-fixable admission policy now excludes <code>open-cluster-management-observability</code> as a trusted ACM platform namespace.</li>
+      <li>The ACS Critical-fixable admission policy now excludes <code>open-cluster-management-observability</code> and <code>openshift-image-prepull</code> as trusted platform namespaces.</li>
+      <li>ACM Observability-managed mutations to <code>cluster-monitoring-config</code> are ignored by Argo so the operator can own Alertmanager/external label wiring while GitOps still disables hub user workload monitoring.</li>
+      <li>Backup health ServiceMonitors and PrometheusRules are now part of the OADP and ACM backup bases.</li>
+      <li><code>components/platform/hub-image-prepull</code> warms selected hub recovery images but does not replace durable image mirroring.</li>
       <li><code>lab-gitops-full/CHANGELOG.md</code> must be updated when desired-state changes occur.</li>
     </ul>
   </section>

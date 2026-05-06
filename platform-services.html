@@ -32,10 +32,11 @@
         <tr><td>Identity</td><td>WSO2 IS removed. Google and htpasswd remain by cluster role.</td><td><code>spoke-dc</code> is Google-only; other clusters retain htpasswd plus Google where recorded.</td></tr>
         <tr><td>AI</td><td>No user AI workloads found.</td><td><code>spoke-dr</code> has RHOAI operator only; <code>hub-dc</code> has stale-looking RHOAI artifacts.</td></tr>
         <tr><td>User workload metrics</td><td>Enabled only on spokes.</td><td><code>hub-dc</code> and <code>hub-dr</code> are explicitly disabled; <code>spoke-dc</code> and <code>spoke-dr</code> run the user workload monitoring stack.</td></tr>
-        <tr><td>ACM Observability</td><td>Enabled on hubs for fleet metrics.</td><td><code>hub-dc</code> is Ready. <code>hub-dr</code> rollout is blocked by a slow/failed Grafana image pull, not by S3 or storage.</td></tr>
+        <tr><td>ACM Observability</td><td>Enabled on hubs for fleet metrics.</td><td>Both hubs are Ready. PVC requests were increased, but the lab still uses non-resilient <code>lvms-vg1</code>.</td></tr>
+        <tr><td>Image pre-pull</td><td>Enabled on hubs as a short-term DR bridge.</td><td><code>openshift-image-prepull</code> warms selected ACM, MCE, GitOps, RHACS, ACM Observability, and OADP images. A durable mirror/IDMS remains open.</td></tr>
         <tr><td>Demo apps</td><td>No removable demo apps on spokes.</td><td><code>demo-orders</code> was wiped from desired state.</td></tr>
         <tr><td>Kafka on OCP</td><td>Retired from spoke desired state.</td><td>Future app Kafka usage should target RKE2 Kafka after DNS and app credentials are ready.</td></tr>
-        <tr><td>OADP</td><td>General daily backups complete in latest recorded run.</td><td>Monitor hub-dr archive persistence and cluster-to-MinIO path latency.</td></tr>
+        <tr><td>OADP</td><td>General daily backups complete in latest recorded run.</td><td>OADP backup health ServiceMonitors and alert rules now exist on all clusters.</td></tr>
         <tr><td>Vault / external secrets</td><td>Not installed yet.</td><td>Preferred direction is one HA external Vault service per environment or site, with per-cluster auth roles. Do not run one Vault per cluster unless an isolation requirement forces it.</td></tr>
       </tbody>
     </table>
@@ -48,7 +49,7 @@
       <li>The operator creates the <code>open-cluster-management-observability</code> namespace, Thanos components, Alertmanager, collectors, and ACM Grafana dashboards.</li>
       <li>Dedicated external MinIO buckets are used: <code>acm-observability-hub-dc</code> and <code>acm-observability-hub-dr</code>.</li>
       <li>The object-store secret <code>thanos-object-storage</code> is seeded out-of-band per hub and is not committed to Git.</li>
-      <li>The lab uses <code>lvms-vg1</code> for ACM Observability PVCs. This is acceptable for the lab, but production should use resilient storage for Thanos stateful components.</li>
+      <li>The lab uses <code>lvms-vg1</code> for ACM Observability PVCs, now sized as Alertmanager/rule <code>2Gi</code> and compact/receive/store <code>20Gi</code>. This is acceptable for the lab, but production should use resilient storage for Thanos stateful components.</li>
       <li>Grafana on the hubs is part of ACM Observability, not a standalone app dashboard install.</li>
     </ul>
   </section>
@@ -67,6 +68,7 @@
       <li>AMQ Streams, Streams Console, Apicurio Registry, Strimzi CRDs, and <code>kafka</code> namespace on the OCP spokes.</li>
       <li>Hub ODF/NooBaa, hub app logging/tracing test stacks, and hub MinIO/Loki/Tempo stacks removed by storage-light cleanup.</li>
       <li>User workload Prometheus and Thanos ruler pods on the management hubs.</li>
+      <li>Any assumption that pre-pull replaces image mirroring; the durable recovery path still needs a DR-reachable registry mirror.</li>
     </ul>
   </section>
 

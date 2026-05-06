@@ -25,9 +25,9 @@
 
   <section class="panel">
     <div class="roadmap">
-      <article><span>1</span><h3>Fresh ACM backup</h3><p>Wait for or create a fresh hub backup that meets the agreed drill RPO.</p></article>
-      <article><span>2</span><h3>Image readiness</h3><p>Mirror or pre-pull ACM/MCE images required by hub-dr restore startup.</p></article>
-      <article><span>3</span><h3>Activation preflight</h3><p>Prove hub-dr passive state, dry-run restore manifests, and restate abort criteria.</p></article>
+      <article><span>1</span><h3>Pre-pull completion</h3><p>Wait for the hub image pre-pull DaemonSet to finish or expose a clear pull failure.</p></article>
+      <article><span>2</span><h3>Durable mirror</h3><p>Build the DR-reachable image mirror/IDMS path for hub recovery images.</p></article>
+      <article><span>3</span><h3>Activation preflight</h3><p>Prove backup freshness, hub-dr passive state, dry-run restore manifests, and restate abort criteria.</p></article>
       <article><span>4</span><h3>Controlled drill</h3><p>Run hub-dc to hub-dr activation only after gates pass and ownership risk is accepted.</p></article>
     </div>
   </section>
@@ -37,9 +37,9 @@
     <table>
       <thead><tr><th>Track</th><th>Next step</th><th>Done signal</th></tr></thead>
       <tbody>
-        <tr><td>ACM Observability</td><td>Finish <code>hub-dr</code> image-pull convergence and verify both hub dashboards.</td><td><code>MultiClusterObservability</code> Ready on both hubs and no non-running pods.</td></tr>
-        <tr><td>Backup health alerts</td><td>Add ACM/OADP freshness policies and alerts.</td><td>Failed or stale backups produce visible policy/alert signals before DR drills.</td></tr>
-        <tr><td>Image mirror / pre-pull</td><td>Mirror or pre-pull ACM, MCE, GitOps, RHACS, and ACM Observability images.</td><td>First-start hub-dr pulls no longer take 15-20 minutes or fail on registry 503s.</td></tr>
+        <tr><td>ACM Observability</td><td>Choose resilient storage for Thanos stateful PVCs.</td><td><code>MultiClusterObservability</code> Ready on both hubs and PVCs no longer depend on lab-local LVMS for production claims.</td></tr>
+        <tr><td>Backup health alerts</td><td>Validate the new ACM/OADP alert rules through an alerting cycle.</td><td>Failed or stale backups produce visible alert signals before DR drills.</td></tr>
+        <tr><td>Image mirror / pre-pull</td><td>Monitor current pre-pull, then implement durable mirror/IDMS.</td><td>First-start hub-dr pulls no longer depend on public registry latency.</td></tr>
         <tr><td>Governance PolicySets</td><td>Group baseline ACM policies into explicit PolicySets.</td><td>Compliance posture is visible by purpose rather than loose individual policies.</td></tr>
         <tr><td>Vault / external secrets</td><td>Choose external HA Vault target and install a cluster integration operator only when rotation is needed.</td><td>Each cluster has its own auth role and no static app secrets are committed to Git.</td></tr>
         <tr><td>Kafka for apps</td><td>Fix DNS for RKE2 Kafka ingress hostnames and align docs around the live 443 endpoint.</td><td>OpenShift pod can resolve and TLS-connect to bootstrap hostname on 443.</td></tr>
