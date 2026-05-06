@@ -20,8 +20,9 @@ Cloudflare Pages project:
 
 - `index.html` - overview and landing page.
 - `topology.html` - cluster roles and placement model.
-- `diagrams.html` - rendered architecture diagrams and reusable diagram
-  source snippets.
+- `diagrams.html` - diagram index with clickable rows.
+- `diagram-fleet-topology.html` - full-page rendered topology diagram and
+  reusable source snippet.
 - `gitops.html` - desired-state repository boundaries and Argo CD flow.
 - `hub-dc.html`, `hub-dr.html`, `spoke-dc.html`, `spoke-dr.html` - per-cluster
   operating notes.

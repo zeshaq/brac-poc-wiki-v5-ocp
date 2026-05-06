@@ -479,6 +479,7 @@ td {
 
 .diagram-figure {
   margin: 0;
+  overflow-x: auto;
 }
 
 .diagram-image {
@@ -494,6 +495,79 @@ td {
   color: var(--muted);
   font-size: 0.92rem;
   margin-top: 0.65rem;
+}
+
+.diagram-list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.diagram-row {
+  align-items: center;
+  background: #fbfdff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: inherit;
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: 110px minmax(170px, 0.9fr) minmax(260px, 1.5fr) 130px;
+  min-height: 76px;
+  padding: 0.85rem 1rem;
+  text-decoration: none;
+}
+
+.diagram-row:hover,
+.diagram-row:focus {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+  outline: none;
+}
+
+.diagram-row.pending {
+  background: #f6f8fb;
+}
+
+.diagram-row.pending:hover {
+  border-color: var(--line);
+  box-shadow: none;
+}
+
+.diagram-meta {
+  color: var(--accent-strong);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.diagram-title {
+  color: var(--ink);
+  font-weight: 760;
+}
+
+.diagram-summary {
+  color: var(--muted);
+}
+
+.diagram-action {
+  color: var(--accent-strong);
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-align: right;
+}
+
+.diagram-row.pending .diagram-action,
+.diagram-row.pending .diagram-title,
+.diagram-row.pending .diagram-summary {
+  color: var(--subtle);
+}
+
+.diagram-detail {
+  max-width: 1320px;
+}
+
+.diagram-image-large {
+  min-width: 900px;
 }
 
 .next-link {
@@ -559,6 +633,14 @@ body.not-found .content {
 
   .topology {
     grid-template-columns: 1fr;
+  }
+
+  .diagram-row {
+    grid-template-columns: 1fr;
+  }
+
+  .diagram-action {
+    text-align: left;
   }
 }
 
