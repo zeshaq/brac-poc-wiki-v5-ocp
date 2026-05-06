@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="680" viewBox="0 0 1120 680" role="img" aria-labelledby="title desc">
+  <title id="title">BRAC POC OpenShift fleet topology</title>
+  <desc id="desc">DC and DR OpenShift hubs and spokes with RKE2 shared services used by Vault, Kafka, MinIO, and GitLab.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#526174"/>
+    </marker>
+    <marker id="arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#176d75"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#123654" flood-opacity="0.12"/>
+    </filter>
+    <style>
+      .bg { fill: #f5f7fb; }
+      .site { fill: #ffffff; stroke: #d8e0ea; stroke-width: 2; filter: url(#shadow); }
+      .dc-band { fill: #f4fbf9; stroke: #c2e4dd; stroke-width: 1; }
+      .dr-band { fill: #fff8ef; stroke: #f0d7ae; stroke-width: 1; }
+      .node { fill: #ffffff; stroke: #bac7d5; stroke-width: 2; }
+      .node-active { stroke: #68b8ad; }
+      .service { fill: #10212d; stroke: #10212d; stroke-width: 2; filter: url(#shadow); }
+      .label { fill: #17212f; font-family: Inter, Arial, sans-serif; font-size: 20px; font-weight: 760; }
+      .small { fill: #526174; font-family: Inter, Arial, sans-serif; font-size: 15px; font-weight: 520; }
+      .site-label { fill: #0f4f57; font-family: Inter, Arial, sans-serif; font-size: 15px; font-weight: 800; letter-spacing: 2px; }
+      .site-label-dr { fill: #925321; }
+      .service-label { fill: #ffffff; font-family: Inter, Arial, sans-serif; font-size: 21px; font-weight: 760; }
+      .service-small { fill: #cfe0e8; font-family: Inter, Arial, sans-serif; font-size: 15px; font-weight: 520; }
+      .edge { fill: none; stroke: #526174; stroke-width: 2.2; marker-end: url(#arrow); }
+      .edge-accent { fill: none; stroke: #176d75; stroke-width: 2.5; marker-end: url(#arrow-accent); }
+      .edge-dashed { fill: none; stroke: #526174; stroke-width: 2.2; stroke-dasharray: 7 7; marker-end: url(#arrow); }
+      .edge-text { fill: #526174; font-family: Inter, Arial, sans-serif; font-size: 14px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect class="bg" width="1120" height="680" rx="18"/>
+
+  <rect class="site dc-band" x="60" y="60" width="430" height="420" rx="16"/>
+  <text class="site-label" x="88" y="104">DC SITE</text>
+  <rect class="node node-active" x="105" y="140" width="340" height="118" rx="12"/>
+  <text class="label" x="137" y="184">hub-dc</text>
+  <text class="small" x="137" y="214">Active management hub</text>
+  <text class="small" x="137" y="238">ACM, MCE, GitOps, RHACS, OADP</text>
+
+  <rect class="node node-active" x="105" y="322" width="340" height="118" rx="12"/>
+  <text class="label" x="137" y="366">spoke-dc</text>
+  <text class="small" x="137" y="396">Active workload cluster</text>
+  <text class="small" x="137" y="420">ODF, OSSM 3, app landing zone</text>
+
+  <rect class="site dr-band" x="630" y="60" width="430" height="420" rx="16"/>
+  <text class="site-label site-label-dr" x="658" y="104">DR SITE</text>
+  <rect class="node" x="675" y="140" width="340" height="118" rx="12"/>
+  <text class="label" x="707" y="184">hub-dr</text>
+  <text class="small" x="707" y="214">Passive restore hub</text>
+  <text class="small" x="707" y="238">No active restore ownership yet</text>
+
+  <rect class="node" x="675" y="322" width="340" height="118" rx="12"/>
+  <text class="label" x="707" y="366">spoke-dr</text>
+  <text class="small" x="707" y="396">Workload standby</text>
+  <text class="small" x="707" y="420">Platform-ready, not hot app mirror</text>
+
+  <rect class="service" x="330" y="545" width="460" height="92" rx="14"/>
+  <text class="service-label" x="370" y="586">RKE2 shared services</text>
+  <text class="service-small" x="370" y="616">Vault, Kafka, MinIO, GitLab, HAProxy edge</text>
+
+  <path class="edge-accent" d="M 275 258 C 275 285 275 295 275 322"/>
+  <text class="edge-text" x="296" y="294">ACM manages active spoke</text>
+
+  <path class="edge" d="M 445 205 C 525 205 585 205 675 205"/>
+  <text class="edge-text" x="484" y="187">ACM backup / activation path</text>
+
+  <path class="edge" d="M 445 370 C 525 370 585 370 675 370"/>
+  <text class="edge-text" x="494" y="352">standby placement decision</text>
+
+  <path class="edge-dashed" d="M 845 322 C 845 292 845 288 845 258"/>
+  <text class="edge-text" x="865" y="294">restore hub later manages DR</text>
+
+  <path class="edge-accent" d="M 495 570 C 350 530 295 492 275 440"/>
+  <path class="edge-accent" d="M 625 570 C 760 528 830 496 845 440"/>
+  <path class="edge-accent" d="M 510 545 C 430 455 365 325 300 258"/>
+  <path class="edge-accent" d="M 610 545 C 690 455 765 325 820 258"/>
+  <text class="edge-text" x="102" y="515">Vault ESO smoke path</text>
+  <text class="edge-text" x="792" y="515">Vault ESO smoke path</text>
+  <text class="edge-text" x="420" y="512">future Kafka app dependency</text>
+</svg>

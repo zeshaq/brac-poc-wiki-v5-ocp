@@ -477,6 +477,25 @@ td {
   padding: 0;
 }
 
+.diagram-figure {
+  margin: 0;
+}
+
+.diagram-image {
+  background: #f5f7fb;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
+.diagram-figure figcaption {
+  color: var(--muted);
+  font-size: 0.92rem;
+  margin-top: 0.65rem;
+}
+
 .next-link {
   margin: 1rem 0 0;
 }

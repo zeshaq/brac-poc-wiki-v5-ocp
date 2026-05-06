@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Diagram library for the BRAC POC OpenShift fleet.">
+<title>Diagrams - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams" aria-current="page">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/apps-kafka">Apps and Kafka</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Diagram library</div>
+    <h1>OpenShift fleet diagrams</h1>
+    <p>This section is the visual catalogue for architecture, traffic flow, GitOps ownership, DR activation, and application onboarding diagrams.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Topology</p><h2>Fleet topology and shared services</h2></div>
+    <figure class="diagram-figure">
+      <img class="diagram-image" src="assets/diagrams/fleet-topology.svg" alt="DC and DR OpenShift topology with RKE2 shared service dependencies">
+      <figcaption>Current OCP management and workload placement, including the RKE2 shared-service dependency path for Vault, Kafka, MinIO, GitLab, and the edge HAProxy.</figcaption>
+    </figure>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Source</p><h2>Mermaid source for the topology diagram</h2></div>
+    <p>Use this source when copying the topology into tools that render Mermaid diagrams.</p>
+    <pre class="command"><code class="language-mermaid">flowchart LR
+  subgraph DC["DC site"]
+    HDC["hub-dc&lt;br/&gt;active management hub"]
+    SDC["spoke-dc&lt;br/&gt;active workload cluster"]
+  end
+
+  subgraph DR["DR site"]
+    HDR["hub-dr&lt;br/&gt;passive restore hub"]
+    SDR["spoke-dr&lt;br/&gt;workload standby"]
+  end
+
+  RKE2["RKE2 shared services&lt;br/&gt;Vault, Kafka, MinIO, GitLab, HAProxy edge"]
+
+  HDC -- "ACM manages active spoke" --&gt; SDC
+  HDC -. "ACM backup and activation path" .-&gt; HDR
+  SDC -. "standby placement decision" .-&gt; SDR
+  HDR -. "restore hub later manages DR" .-&gt; SDR
+  RKE2 -- "Vault ESO smoke path" --&gt; HDC
+  RKE2 -- "Vault ESO smoke path" --&gt; HDR
+  RKE2 -- "Vault and future Kafka dependency" --&gt; SDC
+  RKE2 -- "Vault ESO smoke path" --&gt; SDR</code></pre>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Planned diagrams</p><h2>Next diagram slots</h2></div>
+    <div class="cards three">
+      <article class="card compact"><h3>GitOps ownership</h3><p>Root app, cluster-config, workload repo, and policy placement boundaries.</p></article>
+      <article class="card compact"><h3>DR activation</h3><p>Backup freshness, hub-dr restore, managed cluster ownership checks, and abort gates.</p></article>
+      <article class="card compact"><h3>App onboarding</h3><p>Java/JBoss app flow through Vault ESO, RKE2 Kafka, OSSM 3 ambient, and OADP.</p></article>
+    </div>
+  </section>
+
+  <p class="next-link"><a href="/gitops">Next: GitOps model</a></p>
+</main>
+</body>
+</html>

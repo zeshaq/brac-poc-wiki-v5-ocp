@@ -20,6 +20,8 @@ Cloudflare Pages project:
 
 - `index.html` - overview and landing page.
 - `topology.html` - cluster roles and placement model.
+- `diagrams.html` - rendered architecture diagrams and reusable diagram
+  source snippets.
 - `gitops.html` - desired-state repository boundaries and Argo CD flow.
 - `hub-dc.html`, `hub-dr.html`, `spoke-dc.html`, `spoke-dr.html` - per-cluster
   operating notes.
@@ -31,6 +33,7 @@ Cloudflare Pages project:
 - `apps-kafka.html` - Java/JBoss app path and RKE2 Kafka readiness.
 - `roadmap.html` - current execution sequence and done signals.
 - `operating-rules.html` - safety and session-memory rules.
+- `assets/diagrams/` - static diagram assets.
 - `styles.css` - responsive, static styling.
 - `404.html` - static not-found page.
 - `robots.txt` and `sitemap.xml` - crawler hints.
