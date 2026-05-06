@@ -502,6 +502,16 @@ td {
   gap: 0.65rem;
 }
 
+.diagram-group-title {
+  color: var(--ink);
+  font-size: 1rem;
+  margin: 0.85rem 0 0.2rem;
+}
+
+.diagram-group-title:first-child {
+  margin-top: 0;
+}
+
 .diagram-row {
   align-items: center;
   background: #fbfdff;

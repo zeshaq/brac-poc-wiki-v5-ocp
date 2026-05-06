@@ -26,28 +26,129 @@
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Index</p><h2>Diagram rows</h2></div>
     <div class="diagram-list">
+      <h3 class="diagram-group-title">Core diagrams</h3>
       <a class="diagram-row" href="/diagram-fleet-topology">
-        <span class="diagram-meta">Topology</span>
-        <span class="diagram-title">Fleet topology and shared services</span>
-        <span class="diagram-summary">DC/DR hub-spoke placement with RKE2 Vault, Kafka, MinIO, GitLab, and edge HAProxy dependencies.</span>
+        <span class="diagram-meta">Core 01</span>
+        <span class="diagram-title">Fleet topology</span>
+        <span class="diagram-summary">Shows <code>hub-dc</code>, <code>hub-dr</code>, <code>spoke-dc</code>, <code>spoke-dr</code>, and RKE2 shared services.</span>
         <span class="diagram-action">Open full page</span>
       </a>
       <article class="diagram-row pending">
-        <span class="diagram-meta">GitOps</span>
-        <span class="diagram-title">GitOps ownership</span>
-        <span class="diagram-summary">Root app, cluster-config, workload repo, and policy placement boundaries.</span>
+        <span class="diagram-meta">Core 02</span>
+        <span class="diagram-title">Network and DNS flow</span>
+        <span class="diagram-summary">Explains public DNS, Cloudflare, HAProxy edge, OpenShift/RKE2 ingress, routes, and app hostnames.</span>
         <span class="diagram-action">Queued</span>
       </article>
       <article class="diagram-row pending">
-        <span class="diagram-meta">DR</span>
-        <span class="diagram-title">DR activation</span>
-        <span class="diagram-summary">Backup freshness, hub-dr restore, managed cluster ownership checks, and abort gates.</span>
+        <span class="diagram-meta">Core 03</span>
+        <span class="diagram-title">Cluster role model</span>
+        <span class="diagram-summary">Explains what belongs on hubs versus spokes: ACM, GitOps, RHACS, OADP, workloads, mesh, and monitoring.</span>
         <span class="diagram-action">Queued</span>
       </article>
       <article class="diagram-row pending">
-        <span class="diagram-meta">Apps</span>
-        <span class="diagram-title">Java/JBoss app onboarding</span>
-        <span class="diagram-summary">Application flow through Vault ESO, RKE2 Kafka, OSSM 3 ambient, and backup policy.</span>
+        <span class="diagram-meta">Core 04</span>
+        <span class="diagram-title">GitOps architecture</span>
+        <span class="diagram-summary">Shows GitLab repos, app-of-apps, cluster-config apps, workload repo, overlays, and sync flow.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Core 05</span>
+        <span class="diagram-title">Operator placement</span>
+        <span class="diagram-summary">Matrix-style view showing which operators run on hubs or spokes and why.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Core 06</span>
+        <span class="diagram-title">Secrets and Vault flow</span>
+        <span class="diagram-summary">Shows RKE2 Vault, Kubernetes auth mounts, ESO <code>SecretStore</code>, <code>ExternalSecret</code>, and target app secrets.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Core 07</span>
+        <span class="diagram-title">Observability architecture</span>
+        <span class="diagram-summary">Shows ACM Observability collectors, hub Thanos/Grafana, object storage buckets, and user workload monitoring on spokes.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Core 08</span>
+        <span class="diagram-title">Backup and DR architecture</span>
+        <span class="diagram-summary">Shows OADP, ACM backup, MinIO buckets, hub-dc to hub-dr activation path, and restore ownership.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Core 09</span>
+        <span class="diagram-title">Image mirror and pre-pull path</span>
+        <span class="diagram-summary">Shows pull sources, hub image pre-pull, future mirror registry, IDMS/ITMS, and disconnected recovery risk.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Core 10</span>
+        <span class="diagram-title">Service Mesh ambient architecture</span>
+        <span class="diagram-summary">Shows OSSM 3 Sail Operator, Istio, IstioCNI, ztunnel, and app namespace ambient opt-in.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+
+      <h3 class="diagram-group-title">Application diagrams</h3>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">App 11</span>
+        <span class="diagram-title">Java/JBoss app runtime</span>
+        <span class="diagram-summary">Shows namespace, Deployment, Service, Route/Gateway, and database, API, or Kafka dependencies.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">App 12</span>
+        <span class="diagram-title">Java/JBoss app GitOps flow</span>
+        <span class="diagram-summary">Shows app source repo, image build, registry, workload repo, and Argo sync to spokes.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">App 13</span>
+        <span class="diagram-title">Kafka integration</span>
+        <span class="diagram-summary">Shows an OCP app consuming RKE2 Kafka over <code>bootstrap.kafka...:443</code> with TLS/SCRAM, ACLs, and CA trust.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">App 14</span>
+        <span class="diagram-title">App secret onboarding</span>
+        <span class="diagram-summary">Shows how a new app gets Vault policy, ESO objects, Kubernetes Secret, and runtime environment or config.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">App 15</span>
+        <span class="diagram-title">App DR placement</span>
+        <span class="diagram-summary">Shows active app placement on <code>spoke-dc</code>, standby options on <code>spoke-dr</code>, and backup/restore or active-passive choices.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+
+      <h3 class="diagram-group-title">Operations diagrams</h3>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Ops 16</span>
+        <span class="diagram-title">Hub DR activation runbook</span>
+        <span class="diagram-summary">Step-by-step gate view for backup freshness, hub-dr restore, ownership validation, and abort paths.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Ops 17</span>
+        <span class="diagram-title">Backup freshness alert flow</span>
+        <span class="diagram-summary">Shows Velero and ACM backup metrics, PrometheusRules, alert path, and DR drill gate.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Ops 18</span>
+        <span class="diagram-title">Governance PolicySet model</span>
+        <span class="diagram-summary">Shows ACM policies, placement, PolicySets, and compliance reporting across hubs and spokes.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Ops 19</span>
+        <span class="diagram-title">Storage topology</span>
+        <span class="diagram-summary">Shows hub LVMS, spoke ODF/localblock, ACM Observability PVCs, and MinIO object storage.</span>
+        <span class="diagram-action">Queued</span>
+      </article>
+      <article class="diagram-row pending">
+        <span class="diagram-meta">Ops 20</span>
+        <span class="diagram-title">Security posture</span>
+        <span class="diagram-summary">Shows RHACS Central/SecuredCluster, admission control, image scanning, and policy enforcement.</span>
         <span class="diagram-action">Queued</span>
       </article>
     </div>
