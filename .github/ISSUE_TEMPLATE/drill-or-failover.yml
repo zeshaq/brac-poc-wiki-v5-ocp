@@ -1,0 +1,76 @@
+name: DR drill or failover exercise
+description: Track a planned hub, workload, storage, or backup DR drill.
+title: "[DR Drill] "
+labels:
+  - type/drill
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this before any drill that changes placement, restore state, or failover ownership. Do not paste secrets or full Secret manifests.
+  - type: dropdown
+    id: drill-type
+    attributes:
+      label: Drill type
+      options:
+        - Hub activation
+        - Workload failover
+        - ODF Regional-DR relocate
+        - ODF Regional-DR failover
+        - OADP restore
+        - Other OpenShift DR drill
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: Which clusters, namespaces, applications, and storage classes are in scope?
+    validations:
+      required: true
+  - type: textarea
+    id: preflight
+    attributes:
+      label: Required preflight gates
+      value: |
+        - [ ] Backup freshness meets agreed RPO.
+        - [ ] Passive target state is validated.
+        - [ ] Image mirror or pre-pull readiness is validated.
+        - [ ] Restore or failover manifests are dry-run where applicable.
+        - [ ] Abort criteria are written down.
+    validations:
+      required: true
+  - type: textarea
+    id: execution
+    attributes:
+      label: Execution plan
+      description: Step-by-step drill sequence.
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation and exit criteria
+      description: What proves the drill succeeded, failed safely, or should be aborted?
+    validations:
+      required: true
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Rollback or failback path
+      description: Include separate paths for pre-activation abort and post-activation recovery when relevant.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: This issue does not include secrets, kubeconfigs, kubeadmin passwords, pull secrets, PAT values, or full Secret manifests.
+          required: true
+        - label: The user must explicitly approve any live cluster change or ownership-changing failover.
+          required: true

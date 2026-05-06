@@ -1,0 +1,55 @@
+name: OpenShift decision record
+description: Track an operational decision that may become an ADR or runbook rule.
+title: "[Decision] "
+labels:
+  - type/decision
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for OpenShift operating decisions. If accepted, update the matching local ADR, runbook, wiki page, or assessment.
+  - type: textarea
+    id: decision
+    attributes:
+      label: Decision needed
+      description: State the decision as a concrete question.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: What fleet state, constraint, risk, or user goal is driving this?
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Options
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+  - type: textarea
+    id: recommendation
+    attributes:
+      label: Recommendation
+      description: Preferred option and why.
+    validations:
+      required: false
+  - type: textarea
+    id: consequences
+    attributes:
+      label: Consequences
+      description: Record tradeoffs, follow-up changes, and docs that must be updated.
+    validations:
+      required: false
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: This issue does not include secrets, kubeconfigs, kubeadmin passwords, pull secrets, PAT values, or full Secret manifests.
+          required: true

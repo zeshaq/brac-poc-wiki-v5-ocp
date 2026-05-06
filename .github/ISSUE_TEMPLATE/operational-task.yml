@@ -1,0 +1,94 @@
+name: OpenShift operational task
+description: Track a bounded OpenShift fleet task, validation item, or remediation.
+title: "[OCP] "
+labels:
+  - type/task
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this for OpenShift-only work. Do not paste secrets, kubeconfigs, kubeadmin passwords, pull secrets, PAT values, or full Secret manifests.
+  - type: textarea
+    id: objective
+    attributes:
+      label: Objective
+      description: What should be true when this issue is complete?
+      placeholder: "Example: Build a DR-reachable image mirror path for hub recovery images."
+    validations:
+      required: true
+  - type: dropdown
+    id: clusters
+    attributes:
+      label: Cluster scope
+      multiple: true
+      options:
+        - hub-dc
+        - hub-dr
+        - spoke-dc
+        - spoke-dr
+        - all clusters
+        - documentation only
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - ACM
+        - App onboarding
+        - Backup and DR
+        - GitOps
+        - Image mirror
+        - OADP
+        - ODF
+        - Observability
+        - RHACS
+        - Service mesh
+        - Vault and ESO
+        - Wiki and tracking
+    validations:
+      required: true
+  - type: textarea
+    id: current-state
+    attributes:
+      label: Current state
+      description: Summarize the recorded or live read-only finding. Reference repo files or reports when possible.
+    validations:
+      required: true
+  - type: textarea
+    id: work-items
+    attributes:
+      label: Work items
+      value: |
+        - [ ] 
+        - [ ] 
+        - [ ] 
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation
+      description: List the read-only checks, dry-runs, tests, or URLs that prove completion.
+      value: |
+        - [ ] 
+        - [ ] 
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Risks and rollback
+      description: Record expected risk, blast radius, rollback path, or reason this is safe.
+    validations:
+      required: false
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety confirmation
+      options:
+        - label: This issue does not include secrets, kubeconfigs, kubeadmin passwords, pull secrets, PAT values, or full Secret manifests.
+          required: true
+        - label: Live cluster changes will not be made until explicitly approved.
+          required: true
