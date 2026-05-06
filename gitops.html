@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="GitOps repository model and update discipline for the BRAC POC OpenShift fleet.">
+<title>GitOps Model - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html" aria-current="page">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">GitOps</div>
+    <h1>Desired-state ownership and update flow</h1>
+    <p>Use GitOps as the fleet contract. Live edits should either be deliberate break-glass fixes or short-lived remediation that is reconciled back into desired state.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Repositories</p><h2>Boundaries</h2></div>
+    <table>
+      <thead><tr><th>Path</th><th>Role</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td><code>lab-gitops-full/</code></td><td>Platform desired state</td><td>Operators, storage, ACM, OADP, service mesh, policies, dashboards, cluster overlays, and platform cleanup commits.</td></tr>
+        <tr><td><code>lab-workloads/</code></td><td>Application workload source</td><td>Non-platform app bases. Source-only bases are inert until a cluster overlay references them.</td></tr>
+        <tr><td><code>lab-gitops/</code></td><td>Bootstrap context</td><td>Bootstrap-only reference copied from <code>ocp-bootstrap</code>. Do not treat it as the live desired-state source.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Argo CD</p><h2>Recorded app model</h2></div>
+    <div class="cards three">
+      <article class="card compact"><h3>Root app</h3><p>Root application on <code>hub-dc</code> reconciles the platform repo and ApplicationSets.</p></article>
+      <article class="card compact"><h3>Cluster config apps</h3><p>Each cluster has a cluster-config Application. Local spoke Argo status is authoritative for managed-pull spoke apps.</p></article>
+      <article class="card compact"><h3>Workload app</h3><p><code>hub-dc-workloads</code> points at <code>lab-workloads</code> and deploys only referenced workload overlays.</p></article>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Current repo facts</p><h2>Recent boundaries enforced</h2></div>
+    <ul class="plain-list">
+      <li><code>demo-orders</code> was removed from <code>lab-workloads</code> and inactive Kafka fixtures were removed from <code>lab-gitops-full</code>.</li>
+      <li>AMQ Streams, Streams Console, and Apicurio Registry were removed from live spoke desired state.</li>
+      <li>Hub storage-light work removed ODF/NooBaa, Pipelines, logging, tracing, MinIO/Loki/Tempo, and observability stacks from hubs while retaining LVMS and RHACS.</li>
+      <li><code>lab-gitops-full/CHANGELOG.md</code> must be updated when desired-state changes occur.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Validation</p><h2>Expected checks after changes</h2></div>
+    <pre class="command"><code>oc kustomize lab-gitops-full/clusters/hub-dc
+oc kustomize lab-gitops-full/clusters/hub-dr
+oc kustomize lab-gitops-full/clusters/spoke-dc
+oc kustomize lab-gitops-full/clusters/spoke-dr
+oc kustomize lab-workloads/clusters/spoke-dc
+oc kustomize lab-workloads/clusters/spoke-dr</code></pre>
+    <p>For live validation, check Argo CD sync and health on the specific cluster that owns the Application. Avoid assuming the hub-side status artifact is authoritative for managed-pull spokes.</p>
+  </section>
+
+  <p class="next-link"><a href="hub-dc.html">Next: hub-dc</a></p>
+</main>
+</body>
+</html>
+

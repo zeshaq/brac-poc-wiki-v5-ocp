@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Operating rules and session memory discipline for the BRAC POC OpenShift fleet.">
+<title>Operating Rules - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html" aria-current="page">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Governance</div>
+    <h1>Operating rules</h1>
+    <p>These rules keep the lab recoverable and make future sessions resume from recorded state instead of rediscovering from scratch.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Safety</p><h2>Non-negotiables</h2></div>
+    <ul class="plain-list">
+      <li>Do not print secrets, kubeconfigs, kubeadmin passwords, pull secrets, PAT values, or full Secret manifests.</li>
+      <li>Do not modify live clusters unless the user explicitly asks for remediation.</li>
+      <li>Use read-only checks before remediation so actions are based on current state, not stale notes.</li>
+      <li>Treat <code>lab-gitops-full/</code> as platform desired state and <code>lab-workloads/</code> as non-platform workload desired state.</li>
+      <li>Never revert unrelated user changes in local repositories.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Session memory</p><h2>Start and close routine</h2></div>
+    <div class="cards two">
+      <article class="card"><h3>Start</h3><p>Read <code>CURRENT_STATE.md</code>, <code>SESSION_LOG.md</code>, latest session report, top of <code>TODO.md</code>, and latest fleet health report. Present the likely next work before changes unless the user asks for an urgent fix.</p></article>
+      <article class="card"><h3>Close</h3><p>Update <code>CURRENT_STATE.md</code>, <code>TODO.md</code>, <code>SESSION_LOG.md</code>, and a timestamped report after live checks, live changes, or file edits. Update assessment, runbook, or changelog when their scope changes.</p></article>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Wiki upkeep</p><h2>When to update this site</h2></div>
+    <ul class="plain-list">
+      <li>Cluster role, topology, or DR semantics change.</li>
+      <li>A platform service is added, removed, or materially remediated.</li>
+      <li>A roadmap gate moves from blocked to passing or starts active execution.</li>
+      <li>The Java/JBoss app architecture, Kafka dependency, or service mesh onboarding path changes.</li>
+      <li>A session discovers a risk that a project reader should see without reading raw session logs.</li>
+    </ul>
+  </section>
+
+  <p class="next-link"><a href="index.html">Back to overview</a></p>
+</main>
+</body>
+</html>
+

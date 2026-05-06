@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="hub-dc active management hub details for the BRAC POC OpenShift fleet.">
+<title>hub-dc - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html" aria-current="page">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Active hub</div>
+    <h1>hub-dc</h1>
+    <p><code>hub-dc</code> is the active management cluster for the lab fleet. It owns ACM/MCE management, platform GitOps, hub backup scheduling, and current managed-cluster placement decisions.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Status</p><h2>Recorded current state</h2></div>
+    <dl class="wide">
+      <dt>Role</dt><dd>Active management hub.</dd>
+      <dt>OpenShift</dt><dd>Recorded baseline is <code>4.20.18</code>.</dd>
+      <dt>GitOps</dt><dd>Root and <code>hub-dc-cluster-config</code> recorded <code>Synced/Healthy</code> after the latest remediation sequence.</dd>
+      <dt>ACM backup</dt><dd><code>acm-dpa</code> reconciled, <code>acm-dpa-1</code> available, <code>hub-backup-daily</code> enabled.</dd>
+      <dt>Managed clusters</dt><dd><code>hub-dr</code> is no longer a managed cluster on <code>hub-dc</code>. Current managed pull placement selects spokes only.</dd>
+    </dl>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Storage</p><h2>Storage-light hub posture</h2></div>
+    <p>Hub storage was intentionally reduced. LVMS and RHACS remain. ODF/NooBaa, Pipelines/Tekton Results, logging, tracing, MinIO/Loki/Tempo, OpenTelemetry, Cluster Observability, and Network Observability were removed from hub live state.</p>
+    <ul class="plain-list">
+      <li><code>lvms-vg1</code> is the remaining hub storage class.</li>
+      <li>RHACS Central PVCs remain bound on <code>lvms-vg1</code>.</li>
+      <li>LVMS device discovery is pinned to <code>/dev/vdb</code>, <code>/dev/vdc</code>, and <code>/dev/vdd</code>.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Risk</p><h2>Operational watch items</h2></div>
+    <div class="detail-grid">
+      <article class="card"><h3>Backup freshness</h3><p>Daily ACM backups complete, but the latest recorded backup can still fail a strict two-hour drill RPO. Create a fresh backup immediately before an activation drill unless a looser RPO is accepted.</p></article>
+      <article class="card"><h3>GitOps status artifacts</h3><p>Hub-side managed-pull status for <code>spoke-dr-cluster-config</code> can remain confusing or stale. Prefer local spoke Argo status for managed-pull app truth.</p></article>
+      <article class="card"><h3>Network history</h3><p>A previous GitLab reachability issue was caused by stale conflicting IPs on the HAProxy VM. That was remediated and GitLab route reachability was validated.</p></article>
+      <article class="card"><h3>Drill ownership</h3><p>Do not begin restore activation from hub-dc to hub-dr without explicit approval because managed cluster ownership can move.</p></article>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Validation</p><h2>Useful read-only checks</h2></div>
+    <pre class="command"><code>export KUBECONFIG=&lt;hub-dc-kubeconfig&gt;
+oc get clusterversion
+oc -n open-cluster-management get mch
+oc get mce
+oc -n open-cluster-management-backup get dpa,bsl,backupschedule
+oc -n openshift-gitops get applications.argoproj.io</code></pre>
+  </section>
+
+  <p class="next-link"><a href="hub-dr.html">Next: hub-dr</a></p>
+</main>
+</body>
+</html>

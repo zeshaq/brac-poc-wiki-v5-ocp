@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="hub-dr passive restore hub details for the BRAC POC OpenShift fleet.">
+<title>hub-dr - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html" aria-current="page">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Passive hub</div>
+    <h1>hub-dr</h1>
+    <p><code>hub-dr</code> is the standby management restore hub. It is prepared for a controlled ACM activation path, but it should remain passive until drill gates are clean and ownership risk is explicitly accepted.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Status</p><h2>Recorded current state</h2></div>
+    <dl class="wide">
+      <dt>Role</dt><dd>Passive management restore hub.</dd>
+      <dt>ACM/MCE</dt><dd>MCH recorded <code>Running</code>; MCE recorded <code>Available</code>.</dd>
+      <dt>GitOps</dt><dd>Uses local <code>hub-dr-cluster-config</code> Application rather than hub-propagated managed pull GitOps.</dd>
+      <dt>Restore posture</dt><dd>No active <code>BackupSchedule</code> or <code>Restore</code> should exist during passive state.</dd>
+      <dt>Storage</dt><dd>LVMS retained with pinned devices <code>/dev/vdb</code>, <code>/dev/vdc</code>, and <code>/dev/vdd</code>.</dd>
+    </dl>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Blockers</p><h2>Before activation</h2></div>
+    <ol class="steps">
+      <li><strong>Fresh active-hub backup:</strong> prove all critical ACM backup streams meet the agreed RPO.</li>
+      <li><strong>Image readiness:</strong> mirror or pre-pull ACM/MCE images that were previously slow to pull.</li>
+      <li><strong>Dry-run restore:</strong> server-side dry-run restore manifests before real activation.</li>
+      <li><strong>Ownership check:</strong> confirm no managed cluster will be dual-owned after activation.</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Image risk</p><h2>Known slow pull classes</h2></div>
+    <p>Prior recovery exposed slow startup for large ACM/MCE images. The durable fix is a DR-reachable mirror with IDMS/ITMS, CatalogSource, registry CA, and pull-secret handling committed to desired state. A temporary pre-pull DaemonSet can reduce drill risk while the mirror is built.</p>
+    <ul class="plain-list">
+      <li><code>acm-cli-rhel9</code></li>
+      <li><code>hive-rhel9</code></li>
+      <li><code>assisted-service-9-rhel9</code></li>
+      <li><code>hypershift-cli-rhel9</code></li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Validation</p><h2>Useful read-only checks</h2></div>
+    <pre class="command"><code>export KUBECONFIG=&lt;hub-dr-kubeconfig&gt;
+oc -n open-cluster-management get mch
+oc get mce
+oc -n open-cluster-management-backup get dpa,bsl,backupschedule,restore
+oc get imagedigestmirrorset,imagetagmirrorset,imagecontentsourcepolicy
+oc get ds -A | egrep -i 'pre.?pull|warm|mirror|acm|mce'</code></pre>
+  </section>
+
+  <p class="next-link"><a href="spoke-dc.html">Next: spoke-dc</a></p>
+</main>
+</body>
+</html>

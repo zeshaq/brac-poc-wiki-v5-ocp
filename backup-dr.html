@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Backup and disaster recovery gates for the BRAC POC OpenShift fleet.">
+<title>Backup and DR - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html" aria-current="page">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Resilience</div>
+    <h1>Backup and DR gates</h1>
+    <p>The next major operational milestone is a controlled <code>hub-dc</code> to <code>hub-dr</code> ACM activation drill. Do not start it until the gates below are clean.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Drill gates</p><h2>Current sequence</h2></div>
+    <ol class="steps">
+      <li><strong>Fresh ACM hub backup:</strong> all critical backup streams must meet the agreed RPO.</li>
+      <li><strong>ACM/MCE image readiness:</strong> mirror or pre-pull required images on hub-dr before activation.</li>
+      <li><strong>Activation preflight:</strong> prove hub-dr has no active BackupSchedule/Restore and restore manifests dry-run cleanly.</li>
+      <li><strong>Controlled activation:</strong> proceed only after explicit user approval because ownership can move.</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">OADP</p><h2>General backup state</h2></div>
+    <ul class="plain-list">
+      <li>General OADP daily schedules are staggered: hub-dc at <code>0 2 * * *</code>, hub-dr at <code>20 2 * * *</code>, spoke-dc at <code>40 2 * * *</code>, and spoke-dr at <code>0 3 * * *</code>.</li>
+      <li>Velero has retry hardening: <code>AWS_RETRY_MODE=standard</code>, <code>AWS_MAX_ATTEMPTS=10</code>, and a 512Mi memory request.</li>
+      <li>Latest recorded daily series completed across all four clusters.</li>
+      <li>Residual watch item: hub-dr archive persistence to shared MinIO can be slow; cluster-to-MinIO health checks had intermittent timeout samples.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Validation</p><h2>Read-only checks</h2></div>
+    <pre class="command"><code>export KUBECONFIG=&lt;hub-dc-kubeconfig&gt;
+oc -n open-cluster-management-backup get dpa,bsl
+oc -n open-cluster-management-backup get backupschedule hub-backup-daily -o jsonpath="{.status.phase}{'\n'}{.status.veleroScheduleCredentials.status.lastBackup}{'\n'}{.status.veleroScheduleManagedClusters.status.lastBackup}{'\n'}{.status.veleroScheduleResources.status.lastBackup}{'\n'}"
+oc -n open-cluster-management-backup get backups.velero.io --sort-by=.status.startTimestamp | tail -12
+
+export KUBECONFIG=&lt;hub-dr-kubeconfig&gt;
+oc -n open-cluster-management-backup get backupschedule,restore
+oc get imagedigestmirrorset,imagetagmirrorset,imagecontentsourcepolicy</code></pre>
+  </section>
+
+  <p class="next-link"><a href="service-mesh.html">Next: service mesh</a></p>
+</main>
+</body>
+</html>

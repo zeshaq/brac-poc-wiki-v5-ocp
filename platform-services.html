@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Platform service status across the BRAC POC OpenShift fleet.">
+<title>Platform Services - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html" aria-current="page">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Platform</div>
+    <h1>Platform services and cleanup state</h1>
+    <p>This page summarizes the platform services that matter for OCP operations and separates active platform capabilities from retired or source-only app material.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Summary</p><h2>Service matrix</h2></div>
+    <table>
+      <thead><tr><th>Area</th><th>Current state</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Storage</td><td>Hubs are storage-light with LVMS. Spokes retain ODF.</td><td>Hub ODF/NooBaa and related stacks were removed; RHACS PVCs remain bound on LVMS.</td></tr>
+        <tr><td>Identity</td><td>WSO2 IS removed. Google and htpasswd remain by cluster role.</td><td><code>spoke-dc</code> is Google-only; other clusters retain htpasswd plus Google where recorded.</td></tr>
+        <tr><td>AI</td><td>No user AI workloads found.</td><td><code>spoke-dr</code> has RHOAI operator only; <code>hub-dc</code> has stale-looking RHOAI artifacts.</td></tr>
+        <tr><td>Demo apps</td><td>No removable demo apps on spokes.</td><td><code>demo-orders</code> was wiped from desired state.</td></tr>
+        <tr><td>Kafka on OCP</td><td>Retired from spoke desired state.</td><td>Future app Kafka usage should target RKE2 Kafka after DNS and app credentials are ready.</td></tr>
+        <tr><td>OADP</td><td>General daily backups complete in latest recorded run.</td><td>Monitor hub-dr archive persistence and cluster-to-MinIO path latency.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Retired or absent</p><h2>What should not reappear accidentally</h2></div>
+    <ul class="plain-list">
+      <li>WSO2 IS OAuth integration and its client secret on <code>spoke-dc</code>.</li>
+      <li><code>demo-orders</code> namespace, workload resources, KafkaUser, and orders topics.</li>
+      <li>AMQ Streams, Streams Console, Apicurio Registry, Strimzi CRDs, and <code>kafka</code> namespace on the OCP spokes.</li>
+      <li>Hub ODF/NooBaa, hub logging/tracing/observability test stacks, and hub MinIO/Loki/Tempo stacks removed by storage-light cleanup.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Operational note</p><h2>Source-only app bases</h2></div>
+    <p>Some app bases may remain in source repositories as templates or retained examples. They are not live workloads unless a cluster overlay includes them. Current rendered spoke overlays do not deploy candidate demo apps.</p>
+  </section>
+
+  <p class="next-link"><a href="backup-dr.html">Next: backup and DR</a></p>
+</main>
+</body>
+</html>
+

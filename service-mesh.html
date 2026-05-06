@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="OpenShift Service Mesh 3 status and onboarding plan for the BRAC POC spokes.">
+<title>Service Mesh - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html" aria-current="page">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">OSSM 3</div>
+    <h1>OpenShift Service Mesh 3</h1>
+    <p>OSSM 3 is installed on both workload spokes. The platform is ready; the remaining work is application onboarding and validation.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Live state</p><h2>Recorded platform status</h2></div>
+    <table>
+      <thead><tr><th>Cluster</th><th>Operators</th><th>Control plane</th><th>Workload state</th></tr></thead>
+      <tbody>
+        <tr><td><code>spoke-dc</code></td><td><code>servicemeshoperator3.v3.3.2</code>, <code>kiali-operator.v2.22.2</code></td><td><code>Istio/default</code> and <code>IstioCNI/default</code> healthy</td><td>Only <code>istio-ingress</code> labeled for injection</td></tr>
+        <tr><td><code>spoke-dr</code></td><td><code>servicemeshoperator3.v3.3.2</code>, <code>kiali-operator.v2.22.2</code></td><td><code>Istio/default</code> and <code>IstioCNI/default</code> healthy</td><td>Only <code>istio-ingress</code> labeled for injection</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Onboarding</p><h2>Application checklist</h2></div>
+    <ol class="steps">
+      <li><strong>Select workload:</strong> define which app should enter the mesh and which spoke owns the first deployment.</li>
+      <li><strong>Define namespace labels:</strong> add injection labels only for namespaces that should be meshed.</li>
+      <li><strong>Add routing:</strong> create Gateway and VirtualService resources if external or cross-service mesh routing is required.</li>
+      <li><strong>Validate telemetry:</strong> check Kiali graph, service health, and request paths after traffic is generated.</li>
+      <li><strong>Record DR behavior:</strong> document whether spoke-dr is passive platform standby or active app standby for the workload.</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Caveats</p><h2>Known integration notes</h2></div>
+    <ul class="plain-list">
+      <li>No Bookinfo, metrics-demo, otel-demo, liberty-canary, or demo-orders namespaces exist on either spoke.</li>
+      <li><code>demo-orders</code> has been wiped and should not be used unless intentionally recreated.</li>
+      <li><code>spoke-dr</code> has an OpenShift AI ServiceMesh capability marked missing because it expects the old OSSM v2 operator. OSSM 3 itself is not blocked.</li>
+    </ul>
+  </section>
+
+  <p class="next-link"><a href="apps-kafka.html">Next: apps and Kafka</a></p>
+</main>
+</body>
+</html>
+

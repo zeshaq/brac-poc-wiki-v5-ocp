@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="spoke-dr standby workload cluster details for the BRAC POC OpenShift fleet.">
+<title>spoke-dr - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html" aria-current="page">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Standby workload spoke</div>
+    <h1>spoke-dr</h1>
+    <p><code>spoke-dr</code> is the workload standby cluster. It is platform-ready, but the recorded operating model does not yet treat it as a full hot mirror for application workloads.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Status</p><h2>Recorded current state</h2></div>
+    <dl class="wide">
+      <dt>GitOps</dt><dd><code>spoke-dr-cluster-config</code> recorded <code>Synced/Healthy</code>.</dd>
+      <dt>Storage</dt><dd>ODF desired/live spec uses compact LVMS topology and <code>StorageCluster</code> is ready.</dd>
+      <dt>OADP</dt><dd><code>lab-dpa</code> reconciled, BSL available, latest scheduled daily completed in the recorded run. A historical partially failed backup remains in history.</dd>
+      <dt>AMQ/Kafka</dt><dd>Retired from spoke desired state. No local AMQ/Kafka/Strimzi objects remain.</dd>
+      <dt>AI platform</dt><dd>RHOAI operator installed, but no DataScienceCluster or user AI workloads exist.</dd>
+    </dl>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">OSSM 3</p><h2>Mesh platform state</h2></div>
+    <ul class="plain-list">
+      <li><code>servicemeshoperator3.v3.3.2</code> and <code>kiali-operator.v2.22.2</code> CSVs recorded <code>Succeeded</code>.</li>
+      <li><code>Istio/default</code>, <code>IstioCNI/default</code>, Kiali, OSSM Console, CNI pods, and ingress gateway are recorded running.</li>
+      <li>Only <code>istio-ingress</code> is labeled for injection.</li>
+      <li>RHOAI ServiceMesh capability is recorded <code>False/MissingOperator</code> because it expects the old OSSM v2 operator; this does not block OSSM 3 itself.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Decision point</p><h2>Standby semantics</h2></div>
+    <p>The main open design question is whether <code>spoke-dr</code> should remain platform standby or become app-ready hot standby. If app-ready standby is required, app placement, data dependencies, Kafka credentials, routes, mesh labels, and validation should be added to <code>lab-workloads</code> deliberately.</p>
+    <div class="callout"><strong>Current assumption:</strong> platform standby, not full hot workload mirror.</div>
+  </section>
+
+  <p class="next-link"><a href="platform-services.html">Next: platform services</a></p>
+</main>
+</body>
+</html>
+

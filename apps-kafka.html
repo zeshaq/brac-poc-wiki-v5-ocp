@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Java JBoss demo app architecture and Kafka readiness for the BRAC POC OpenShift fleet.">
+<title>Apps and Kafka - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html" aria-current="page">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Application path</div>
+    <h1>Java/JBoss app and RKE2 Kafka dependency</h1>
+    <p>The next demo app should live in the workload repo, run on the selected OCP spoke, and consume RKE2 Kafka only after DNS, trust, and app-specific authentication are ready.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Architecture</p><h2>Recommended GitOps layout</h2></div>
+    <table>
+      <thead><tr><th>Layer</th><th>Repository or platform</th><th>Expected artifacts</th></tr></thead>
+      <tbody>
+        <tr><td>Application source</td><td>New app repo or workload source tree</td><td>Java/JBoss code, Maven or Gradle build, Containerfile, unit tests.</td></tr>
+        <tr><td>Workload desired state</td><td><code>lab-workloads/</code></td><td>Namespace, Deployment, Service, ConfigMap, runtime Secret reference, health probes, route or mesh resources.</td></tr>
+        <tr><td>Platform desired state</td><td><code>lab-gitops-full/</code></td><td>Only shared platform prerequisites, policy, operators, or cluster-level resources.</td></tr>
+        <tr><td>Kafka platform</td><td>RKE2 Kafka</td><td>App-specific KafkaUser, ACLs, topic policy, cluster CA distribution, runtime SCRAM credentials.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Kafka readiness</p><h2>Current finding</h2></div>
+    <div class="cards two">
+      <article class="card"><h3>Working</h3><p>RKE2 DC Kafka is healthy. Direct TCP/TLS SNI to RKE2 node IPs and HAProxy IP on 443 succeeds from both spokes.</p></article>
+      <article class="card"><h3>Blocked</h3><p><code>bootstrap.kafka.apps.sub.comptech-lab.com</code> and <code>broker-*.kafka.apps.sub.comptech-lab.com</code> do not resolve yet. External 9094 is not reachable.</p></article>
+    </div>
+    <pre class="command"><code>bootstrap.servers=bootstrap.kafka.apps.sub.comptech-lab.com:443
+security.protocol=SASL_SSL
+sasl.mechanism=SCRAM-SHA-512</code></pre>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Before deployment</p><h2>Application checklist</h2></div>
+    <ol class="steps">
+      <li><strong>Fix DNS:</strong> add explicit records or wildcard DNS for <code>*.kafka.apps.sub.comptech-lab.com</code> to the HAProxy IP.</li>
+      <li><strong>Create app identity:</strong> do not reuse platform Kafka users such as <code>mm2</code> or <code>redis-applier</code>.</li>
+      <li><strong>Define topics and ACLs:</strong> model least privilege for the app producer and consumer behavior.</li>
+      <li><strong>Handle secrets safely:</strong> runtime credentials must not be committed into Git.</li>
+      <li><strong>Mount trust:</strong> provide the Strimzi cluster CA to the Java trust configuration.</li>
+      <li><strong>Choose placement:</strong> start on <code>spoke-dc</code>, then decide whether <code>spoke-dr</code> is active standby.</li>
+    </ol>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Runtime shape</p><h2>Expected OCP resources</h2></div>
+    <ul class="plain-list">
+      <li>Namespace with explicit owner labels and optional mesh injection label.</li>
+      <li>Deployment for the Java/JBoss container with readiness and liveness probes.</li>
+      <li>ConfigMap for non-secret Kafka bootstrap and app tuning.</li>
+      <li>Secret reference for SCRAM username/password or mounted secret from an approved external secret flow.</li>
+      <li>Service and Route or Istio Gateway/VirtualService, depending on whether mesh routing is in scope.</li>
+      <li>NetworkPolicy only after required egress to Kafka and platform services is clear.</li>
+    </ul>
+  </section>
+
+  <p class="next-link"><a href="roadmap.html">Next: roadmap</a></p>
+</main>
+</body>
+</html>
+

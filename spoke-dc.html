@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="spoke-dc active workload cluster details for the BRAC POC OpenShift fleet.">
+<title>spoke-dc - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html" aria-current="page">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Active workload spoke</div>
+    <h1>spoke-dc</h1>
+    <p><code>spoke-dc</code> is the active workload cluster. It is the likely first target for the Java/JBoss demo app once workload placement, Kafka connectivity, and mesh onboarding are ready.</p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Status</p><h2>Recorded current state</h2></div>
+    <dl class="wide">
+      <dt>GitOps</dt><dd><code>spoke-dc-cluster-config</code> recorded <code>Synced/Healthy</code> from local spoke Argo CD status.</dd>
+      <dt>Storage</dt><dd>ODF remains on intended <code>localblock</code> topology.</dd>
+      <dt>OADP</dt><dd><code>lab-dpa</code> reconciled, BSL available, latest daily backup completed in the recorded run.</dd>
+      <dt>Identity</dt><dd>WSO2 IS was removed. OAuth IDP is Google only.</dd>
+      <dt>AMQ/Kafka</dt><dd>Retired from spoke desired state. No local <code>kafka</code> namespace or Strimzi objects remain.</dd>
+    </dl>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Service mesh</p><h2>OSSM 3 state</h2></div>
+    <ul class="plain-list">
+      <li><code>servicemeshoperator3.v3.3.2</code> and <code>kiali-operator.v2.22.2</code> CSVs recorded <code>Succeeded</code>.</li>
+      <li><code>Istio/default</code> and <code>IstioCNI/default</code> recorded healthy.</li>
+      <li>Istio revision <code>default</code> recorded <code>Ready=True</code> with version <code>v1.26.8</code>.</li>
+      <li>Only <code>istio-ingress</code> is labeled for injection.</li>
+      <li>No Bookinfo, metrics-demo, otel-demo, liberty-canary, or demo-orders workload namespace exists on the spoke.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">App readiness</p><h2>What is needed next</h2></div>
+    <div class="detail-grid">
+      <article class="card"><h3>Workload base</h3><p>Create a Java/JBoss app base in <code>lab-workloads</code> with deployment, service, config, health checks, and overlay placement.</p></article>
+      <article class="card"><h3>Kafka dependency</h3><p>Use RKE2 Kafka after the advertised Kafka ingress DNS names resolve and an app-specific SCRAM user exists.</p></article>
+      <article class="card"><h3>Mesh onboarding</h3><p>Label the app namespace for injection only after the workload manifests and routing intent are defined.</p></article>
+      <article class="card"><h3>DR choice</h3><p>Decide whether the app also lands in <code>spoke-dr</code> as hot standby or remains active-only during initial validation.</p></article>
+    </div>
+  </section>
+
+  <p class="next-link"><a href="spoke-dr.html">Next: spoke-dr</a></p>
+</main>
+</body>
+</html>
+

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Topology and cluster role details for the BRAC POC OpenShift fleet.">
+<title>Topology - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="index.html">Overview</a><a href="topology.html" aria-current="page">Topology</a><a href="gitops.html">GitOps model</a><a href="hub-dc.html">hub-dc</a><a href="hub-dr.html">hub-dr</a><a href="spoke-dc.html">spoke-dc</a><a href="spoke-dr.html">spoke-dr</a><a href="platform-services.html">Platform services</a><a href="backup-dr.html">Backup and DR</a><a href="service-mesh.html">Service mesh</a><a href="apps-kafka.html">Apps and Kafka</a><a href="roadmap.html">Roadmap</a><a href="operating-rules.html">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">Fleet topology</div>
+    <h1>Cluster roles and placement model</h1>
+    <p>The OCP fleet is intentionally small and role-specific: one active hub, one passive restore hub, one active workload cluster, and one standby workload cluster.</p>
+  </header>
+
+  <section class="panel">
+    <div class="topology" role="img" aria-label="OpenShift fleet topology">
+      <div class="site">
+        <span class="site-label">DC</span>
+        <div class="node primary"><strong>hub-dc</strong><span>active management hub</span></div>
+        <div class="node primary"><strong>spoke-dc</strong><span>active workload cluster</span></div>
+      </div>
+      <div class="link"><span>ACM placement, GitOps, OADP, service mesh, app onboarding</span></div>
+      <div class="site standby">
+        <span class="site-label">DR</span>
+        <div class="node"><strong>hub-dr</strong><span>passive management restore hub</span></div>
+        <div class="node"><strong>spoke-dr</strong><span>workload standby</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Cluster inventory</p><h2>Role matrix</h2></div>
+    <table>
+      <thead><tr><th>Cluster</th><th>Role</th><th>Current posture</th><th>Primary concerns</th></tr></thead>
+      <tbody>
+        <tr><td><code>hub-dc</code></td><td>Active management hub</td><td>ACM/MCE, OADP, GitOps, RHACS, LVMS retained.</td><td>ACM backup freshness before drill.</td></tr>
+        <tr><td><code>hub-dr</code></td><td>Passive restore hub</td><td>Restore-ready hub with local GitOps app and no active restore ownership.</td><td>ACM/MCE image mirror or pre-pull readiness.</td></tr>
+        <tr><td><code>spoke-dc</code></td><td>Active workload cluster</td><td>ODF on localblock, OSSM 3 healthy, no demo app workloads currently present.</td><td>App onboarding and RKE2 Kafka client readiness.</td></tr>
+        <tr><td><code>spoke-dr</code></td><td>Workload standby</td><td>ODF compact LVMS topology, OSSM 3 healthy, RHOAI operator installed without user AI workloads.</td><td>Define whether standby becomes app-ready hot mirror.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Model</p><h2>Operational boundaries</h2></div>
+    <div class="detail-grid">
+      <article class="card"><h3>Management ownership</h3><p><code>hub-dc</code> is the active hub. <code>hub-dr</code> should remain passive until a controlled activation drill. The recorded placement model no longer treats <code>hub-dr</code> as a managed cluster on <code>hub-dc</code>.</p></article>
+      <article class="card"><h3>Workload placement</h3><p><code>spoke-dc</code> is active. <code>spoke-dr</code> is standby with platform services, not currently a full app mirror. That distinction matters before any application DR statement is made.</p></article>
+      <article class="card"><h3>Traffic and platform</h3><p>OSSM 3 is installed on both spokes. Workload routing and telemetry remain app onboarding work, not platform installation work.</p></article>
+      <article class="card"><h3>Data dependencies</h3><p>AMQ/Kafka has been retired from OCP spokes. Future app Kafka consumption should use RKE2 Kafka once DNS and app-specific credentials are ready.</p></article>
+    </div>
+  </section>
+
+  <p class="next-link"><a href="gitops.html">Next: GitOps model</a></p>
+</main>
+</body>
+</html>
+
