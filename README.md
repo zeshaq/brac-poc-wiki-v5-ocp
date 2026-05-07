@@ -62,7 +62,7 @@ Milestones group larger goals such as hub DR, image mirroring, ODF Regional-DR,
 and app onboarding. The GitHub Project gives the board view.
 
 The tracker is not the desired-state source of truth. Platform desired state
-stays in `lab-gitops-full/`, workload desired state stays in `lab-workloads/`,
+stays in `lab-gitops/`, workload desired state stays in `lab-workloads/`,
 and operational session memory stays in `/home/ze/codex-opp-agent`.
 
 Do not put secrets, kubeconfigs, kubeadmin passwords, pull secrets, PAT values,

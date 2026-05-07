@@ -14,7 +14,7 @@
   <nav class="nav">
     <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops" aria-current="page">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/production-readiness">Production readiness</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
-  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+  <div class="sidebar-note">Snapshot: 2026-05-07 UTC</div>
 </aside>
 <main id="main" class="content">
   <header class="page-header">
@@ -28,7 +28,7 @@
     <table>
       <thead><tr><th>Path</th><th>Role</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td><code>lab-gitops-full/</code></td><td>Platform desired state</td><td>Operators, storage, ACM, OADP, service mesh, ESO wiring, policies, dashboards, cluster overlays, and platform cleanup commits.</td></tr>
+        <tr><td><code>lab-gitops/</code></td><td>Platform desired state</td><td>Operators, storage, ACM, OADP, service mesh, ESO wiring, policies, dashboards, cluster overlays, and platform cleanup commits.</td></tr>
         <tr><td><code>lab-workloads/</code></td><td>Application workload source</td><td>Non-platform app bases. Source-only bases are inert until a cluster overlay references them.</td></tr>
         <tr><td><code>lab-gitops/</code></td><td>Bootstrap context</td><td>Bootstrap-only reference copied from <code>ocp-bootstrap</code>. Do not treat it as the live desired-state source.</td></tr>
       </tbody>
@@ -57,16 +57,16 @@
       <li><code>components/platform/hub-image-prepull</code> warms selected hub recovery images but does not replace durable image mirroring.</li>
       <li><code>components/platform/external-secrets-vault</code> defines the non-secret OpenShift side of the external Vault integration: service accounts, TokenReview RBAC, <code>SecretStore/rke2-vault</code>, and the smoke <code>ExternalSecret</code>.</li>
       <li>Vault tokens, TokenReview JWTs, app secret values, and full Secret manifests remain outside Git.</li>
-      <li><code>lab-gitops-full/CHANGELOG.md</code> must be updated when desired-state changes occur.</li>
+      <li><code>lab-gitops/CHANGELOG.md</code> must be updated when desired-state changes occur.</li>
     </ul>
   </section>
 
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Validation</p><h2>Expected checks after changes</h2></div>
-    <pre class="command"><code>oc kustomize lab-gitops-full/clusters/hub-dc
-oc kustomize lab-gitops-full/clusters/hub-dr
-oc kustomize lab-gitops-full/clusters/spoke-dc
-oc kustomize lab-gitops-full/clusters/spoke-dr
+    <pre class="command"><code>oc kustomize lab-gitops/clusters/hub-dc
+oc kustomize lab-gitops/clusters/hub-dr
+oc kustomize lab-gitops/clusters/spoke-dc
+oc kustomize lab-gitops/clusters/spoke-dr
 oc kustomize lab-workloads/clusters/spoke-dc
 oc kustomize lab-workloads/clusters/spoke-dr</code></pre>
     <p>For live validation, check Argo CD sync and health on the specific cluster that owns the Application. Avoid assuming the hub-side status artifact is authoritative for managed-pull spokes.</p>
