@@ -2,8 +2,20 @@
 
 ## Status
 
-Accepted — 2026-05-07. **Supersedes [ADR-0002](0002-argocd-agent-topology.md)** on
-the PKI strategy and install path.
+**Superseded by [ADR-0006](0006-poc-uses-traditional-push-based-gitops.md) on
+2026-05-07** (same day) for the POC.
+
+Was: Accepted — 2026-05-07. Supersedes ADR-0002 on the PKI strategy and install path.
+
+This ADR's analysis remains accurate as a future-migration plan: when Argo CD
+Agent matures past Red Hat's "emerging configuration" maturity caveat (per the
+1.20 architecture doc) and the RHACM `gitopsaddon` ↔ OLM `Subscription`
+integration stabilises, this is the recorded path. For the POC, Red Hat's own
+1.20 architecture doc explicitly recommends *"start with the traditional
+push-based hub-and-spoke model before adopting the Agent-based approach"*, plus
+§1.8 lists "Partial support for ApplicationSets" and "Limited App-of-Apps
+pattern support in managed mode" — both of which the lab uses. ADR-0006
+captures the walkback.
 
 ## Context
 
