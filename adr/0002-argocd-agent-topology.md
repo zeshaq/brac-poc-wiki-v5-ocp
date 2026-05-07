@@ -2,7 +2,19 @@
 
 ## Status
 
-Accepted — 2026-05-07
+**Superseded by [ADR-0003](0003-argocd-agent-via-acm-gitopsaddon.md) on 2026-05-07** (same day).
+
+Was: Accepted — 2026-05-07.
+
+The Operating-mode and Principal-HA decisions in this ADR remain in force in 0003.
+The PKI decision (`argocd-agentctl` + Vault) and the implied manual install path
+(separate Principal/Agent CRs in `lab-gitops/components/platform/`) are
+**superseded** — research after this ADR was accepted revealed that RHACM 2.15+
+ships the Argo CD Agent as a Tech Preview via the existing `gitopsaddon`, with
+`propagateHubCA: true` providing ACM-managed CA propagation. Verified hub-dc is
+on RHACM 2.16.1, which makes the `gitopsaddon`-driven path the canonical
+Red Hat-recommended install for this fleet. See ADR-0003 for the corrected
+decision and the citations.
 
 ## Context
 
