@@ -49,7 +49,7 @@
 
   <section class="panel">
     <div class="section-head"><p class="section-kicker">Decision recorded 2026-05-07</p><h2>Standby semantics: platform standby</h2></div>
-    <p><code>spoke-dr</code> remains platform standby — operators, OSSM 3, ESO, OADP, and storage stay ready, but no application workloads run in normal operation. <code>lab-workloads/clusters/spoke-dr/kustomization.yaml</code> is intentionally <code>resources: []</code>; the workload <code>ApplicationSet</code> matches <code>spoke-dc</code> only.</p>
+    <p><code>spoke-dr</code> remains platform standby — operators, OSSM 3, ESO, OADP, and storage stay ready, but no application workloads run in normal operation. <code>lab-workloads/clusters/spoke-dr/kustomization.yaml</code> is intentionally <code>resources: []</code>; the workload <code>ApplicationSet</code> matches <code>spoke-dc</code> only. Full rationale and alternatives in <a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/blob/main/adr/0001-spoke-dr-platform-standby.md">ADR-0001</a>.</p>
     <p>This avoids the cost of cross-cluster session replication, dual image promotion, and split-brain handling that hot-standby would imply. The trade-off is non-trivial activation time during a regional spoke-dc loss; that's accepted in exchange for operational simplicity.</p>
     <div class="callout"><strong>DR activation procedure (runbook-driven, owner-approved):</strong>
       <ol>
