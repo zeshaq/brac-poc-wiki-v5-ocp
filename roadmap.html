@@ -39,7 +39,7 @@
       <tbody>
         <tr><td>Gate source</td><td>Use the <a href="/production-readiness">production readiness checklist</a> as the local analysis page.</td><td>Every gate has an evidence source, owner, remediation path, and accepted risk state.</td></tr>
         <tr><td>Hub DR</td><td>Map hub-dc to hub-dr drill readiness against backup, image, observability, and lifecycle gates.</td><td>Drill entry criteria pass without relying on stale backup or slow public image pulls.</td></tr>
-        <tr><td>Regional DR</td><td>Map spoke-dc to spoke-dr hot standby against ODF Advanced Regional-DR gates.</td><td>Protected workload relocate, failover, failback, and hot-standby operations have captured evidence.</td></tr>
+        <tr><td>Regional DR</td><td>Drill the runbook-driven <code>spoke-dc</code> → <code>spoke-dr</code> activation. (Hot-standby was rejected on 2026-05-07; activation is deliberate and runbook-driven.)</td><td>Drill captures image pre-pull warmth, Vault role on <code>spoke-dr</code>, runbook activation steps, end-to-end recovery time, and post-drill cleanup procedure.</td></tr>
       </tbody>
     </table>
   </section>
@@ -66,7 +66,7 @@
         <tr><td>External dependency policy</td><td>Document which external services are allowed in the OCP wiki and only when they affect OpenShift core operations.</td><td>Wiki references stay limited to Vault, backup/object storage, GitOps source, identity, ingress, and approved app onboarding touchpoints.</td></tr>
         <tr><td>Java/JBoss app</td><td>Create workload base, image build, runtime config, and OCP overlay.</td><td>App runs on selected spoke with health checks, secrets through ESO, and documented OpenShift routing/mesh posture.</td></tr>
         <tr><td>OSSM 3 onboarding</td><td>Select workload namespace and routing model.</td><td>Kiali shows app traffic and routes behave as intended.</td></tr>
-        <tr><td>spoke-dr semantics</td><td>Choose platform standby or app-ready hot standby.</td><td>Placement and validation steps are explicit in GitOps and runbooks.</td></tr>
+        <tr><td>spoke-dr semantics</td><td><strong>Decided 2026-05-07: platform standby.</strong> Documented in <a href="/spoke-dr">spoke-dr</a> and <a href="/topology">topology</a>.</td><td>Done. Follow-up work is the Regional DR drill row above and the activation runbook in <a href="/backup-dr">Backup and DR</a>.</td></tr>
         <tr><td>Wiki maintenance</td><td>Update pages after meaningful fleet changes.</td><td>Wiki matches <code>CURRENT_STATE.md</code>, <code>ASSESSMENT.md</code>, and <code>TODO.md</code>.</td></tr>
       </tbody>
     </table>

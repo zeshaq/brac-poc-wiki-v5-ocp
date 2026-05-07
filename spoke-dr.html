@@ -20,7 +20,7 @@
   <header class="page-header">
     <div class="eyebrow">Standby workload spoke</div>
     <h1>spoke-dr</h1>
-    <p><code>spoke-dr</code> is the workload standby cluster. It is platform-ready, but the recorded operating model does not yet treat it as a full hot mirror for application workloads.</p>
+    <p><code>spoke-dr</code> is the workload standby cluster. <strong>Decision 2026-05-07: platform standby</strong> — platform services are kept ready, application workloads activate only via the DR drill runbook. Not a hot mirror.</p>
   </header>
 
   <section class="panel">
@@ -48,9 +48,18 @@
   </section>
 
   <section class="panel">
-    <div class="section-head"><p class="section-kicker">Decision point</p><h2>Standby semantics</h2></div>
-    <p>The main open design question is whether <code>spoke-dr</code> should remain platform standby or become app-ready hot standby. If app-ready standby is required, app placement, OpenShift secrets, routes, mesh labels, backup policy, and validation should be added to <code>lab-workloads</code> deliberately.</p>
-    <div class="callout"><strong>Current assumption:</strong> platform standby, not full hot workload mirror.</div>
+    <div class="section-head"><p class="section-kicker">Decision recorded 2026-05-07</p><h2>Standby semantics: platform standby</h2></div>
+    <p><code>spoke-dr</code> remains platform standby — operators, OSSM 3, ESO, OADP, and storage stay ready, but no application workloads run in normal operation. <code>lab-workloads/clusters/spoke-dr/kustomization.yaml</code> is intentionally <code>resources: []</code>; the workload <code>ApplicationSet</code> matches <code>spoke-dc</code> only.</p>
+    <p>This avoids the cost of cross-cluster session replication, dual image promotion, and split-brain handling that hot-standby would imply. The trade-off is non-trivial activation time during a regional spoke-dc loss; that's accepted in exchange for operational simplicity.</p>
+    <div class="callout"><strong>DR activation procedure (runbook-driven, owner-approved):</strong>
+      <ol>
+        <li>Confirm <code>spoke-dc</code> is unrecoverable (or accepted-loss for the drill).</li>
+        <li>Owner opens a PR on <code>lab-workloads</code> populating <code>clusters/spoke-dr/kustomization.yaml</code> with the workload references currently on <code>spoke-dc</code>.</li>
+        <li>Merge → the workload <code>ApplicationSet</code> selector is widened (or a one-time manual <code>Application</code> per workload) so the hub Argo CD generates <code>spoke-dr-workloads</code>; the Argo CD Agent on <code>spoke-dr</code> reconciles. Image pull warmth comes from the pre-pull controller already on the cluster.</li>
+        <li>Owner flips the public DNS / LB to <code>spoke-dr</code>'s ingress.</li>
+        <li>Capture evidence (Argo sync time, route reachability, smoke tests) for the drill record.</li>
+      </ol>
+    </div>
   </section>
 
   <p class="next-link"><a href="/platform-services">Next: platform services</a></p>
