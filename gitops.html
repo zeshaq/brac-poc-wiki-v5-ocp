@@ -40,7 +40,7 @@
     <div class="cards three">
       <article class="card compact"><h3>Root app</h3><p>Root application on <code>hub-dc</code> reconciles the platform repo and ApplicationSets.</p></article>
       <article class="card compact"><h3>Cluster config apps</h3><p>Each cluster has a cluster-config Application. Local spoke Argo status is authoritative for managed-pull spoke apps.</p></article>
-      <article class="card compact"><h3>Workload app</h3><p><code>hub-dc-workloads</code> points at <code>lab-workloads</code> and deploys only referenced workload overlays.</p></article>
+      <article class="card compact"><h3>Workload app</h3><p><code>hub-dc-workloads</code> points at <code>lab-workloads</code> and deploys only referenced workload overlays. The <code>ApplicationSet</code> matches <code>spoke-dc</code> only — <code>spoke-dr</code> is platform standby (decision 2026-05-07) and opts in deliberately via the activation runbook.</p></article>
     </div>
   </section>
 

@@ -47,7 +47,7 @@
         <tr><td><code>hub-dc</code></td><td>Active management hub</td><td>ACM/MCE, OADP, GitOps, RHACS, LVMS retained.</td><td>ACM backup freshness before drill.</td></tr>
         <tr><td><code>hub-dr</code></td><td>Passive restore hub</td><td>Restore-ready hub with local GitOps app and no active restore ownership.</td><td>ACM/MCE image mirror or pre-pull readiness.</td></tr>
         <tr><td><code>spoke-dc</code></td><td>Active workload cluster</td><td>ODF on localblock, OSSM 3 healthy, no demo app workloads currently present.</td><td>App onboarding, mesh opt-in, and workload policy readiness.</td></tr>
-        <tr><td><code>spoke-dr</code></td><td>Workload standby</td><td>ODF compact LVMS topology, OSSM 3 healthy, RHOAI operator installed without user AI workloads.</td><td>Define whether standby becomes app-ready hot mirror.</td></tr>
+        <tr><td><code>spoke-dr</code></td><td>Platform standby</td><td>ODF compact LVMS topology, OSSM 3 healthy, RHOAI operator installed without user AI workloads.</td><td>Decision 2026-05-07: platform standby. App workloads activate via runbook-driven DR drill, not active-active mirroring.</td></tr>
       </tbody>
     </table>
   </section>
@@ -56,7 +56,7 @@
     <div class="section-head"><p class="section-kicker">Model</p><h2>Operational boundaries</h2></div>
     <div class="detail-grid">
       <article class="card"><h3>Management ownership</h3><p><code>hub-dc</code> is the active hub. <code>hub-dr</code> should remain passive until a controlled activation drill. The recorded placement model no longer treats <code>hub-dr</code> as a managed cluster on <code>hub-dc</code>.</p></article>
-      <article class="card"><h3>Workload placement</h3><p><code>spoke-dc</code> is active. <code>spoke-dr</code> is standby with platform services, not currently a full app mirror. That distinction matters before any application DR statement is made.</p></article>
+      <article class="card"><h3>Workload placement</h3><p><code>spoke-dc</code> is active. <code>spoke-dr</code> is platform standby (decision 2026-05-07): platform services stay ready but no application workloads run in normal operation. App-side DR is a deliberate runbook activation, not a hot mirror.</p></article>
       <article class="card"><h3>Traffic and platform</h3><p>OSSM 3 is installed on both spokes. Workload routing and telemetry remain app onboarding work, not platform installation work.</p></article>
       <article class="card"><h3>External boundaries</h3><p>External systems are documented here only when they directly support OpenShift operations, such as external Vault for secrets, MinIO for backup/object storage, GitOps source control, identity, or edge ingress.</p></article>
     </div>

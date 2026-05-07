@@ -60,6 +60,21 @@
   </section>
 
   <section class="panel">
+    <div class="section-head"><p class="section-kicker">Spoke regional DR</p><h2><code>spoke-dc</code> → <code>spoke-dr</code> activation procedure</h2></div>
+    <p>spoke-dr is platform standby (decision 2026-05-07): platform services stay ready, app workloads activate only when an owner-approved drill or real outage moves traffic. The procedure is deliberately runbook-driven, not automated — see <a href="/spoke-dr">spoke-dr</a> for the rationale.</p>
+    <ol class="steps">
+      <li><strong>Confirm:</strong> spoke-dc is unrecoverable (or accepted-loss for the drill). Capture the cluster state.</li>
+      <li><strong>Image pre-pull check:</strong> spoke-dr's pre-pull DaemonSet has the workload images warm; if not, wait for the pull to complete before activation.</li>
+      <li><strong>Vault role:</strong> confirm <code>kubernetes-spoke-dr</code> auth mount has the per-app role bound to the workload SAs (the role exists for the platform smoke path; per-app roles are added at activation time).</li>
+      <li><strong>Workload activation PR:</strong> owner opens a PR on <code>lab-workloads</code> populating <code>clusters/spoke-dr/kustomization.yaml</code> with the workload references currently on spoke-dc. Merge to <code>main</code>.</li>
+      <li><strong>ApplicationSet picks up:</strong> hub Argo CD generates <code>spoke-dr-workloads</code>; the cluster's Argo reconciles. Track status on the spoke's local Argo CD UI (authoritative for managed-pull spokes per the GitOps model).</li>
+      <li><strong>DNS / LB cutover:</strong> owner flips the public route to spoke-dr's ingress.</li>
+      <li><strong>Evidence:</strong> capture activation timeline, sync time, route reachability, and smoke test results for the drill record.</li>
+      <li><strong>Post-drill:</strong> revert <code>clusters/spoke-dr/kustomization.yaml</code> to <code>resources: []</code> when traffic returns to spoke-dc.</li>
+    </ol>
+  </section>
+
+  <section class="panel">
     <div class="section-head"><p class="section-kicker">Alerting</p><h2>Backup health controls</h2></div>
     <ul class="plain-list">
       <li><code>oadp-backup-health</code> runs in <code>openshift-adp</code> on all four clusters.</li>
