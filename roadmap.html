@@ -38,8 +38,8 @@
       <thead><tr><th>Track</th><th>Next step</th><th>Done signal</th></tr></thead>
       <tbody>
         <tr><td>Gate source</td><td>Use the <a href="/production-readiness">production readiness checklist</a> as the local analysis page.</td><td>Every gate has an evidence source, owner, remediation path, and accepted risk state.</td></tr>
-        <tr><td>Hub DR</td><td>Map hub-dc to hub-dr drill readiness against backup, image, observability, and lifecycle gates.</td><td>Drill entry criteria pass without relying on stale backup or slow public image pulls.</td></tr>
-        <tr><td>Regional DR</td><td>Drill the runbook-driven <code>spoke-dc</code> → <code>spoke-dr</code> activation. (Hot-standby was rejected on 2026-05-07; activation is deliberate and runbook-driven.)</td><td>Drill captures image pre-pull warmth, Vault role on <code>spoke-dr</code>, runbook activation steps, end-to-end recovery time, and post-drill cleanup procedure.</td></tr>
+        <tr><td>Hub DR</td><td><strong>Deferred for the POC</strong> per <a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/blob/main/adr/0005-defer-hub-dr-spoke-dr-poc-scope.md">ADR-0005</a>. POC ships on hub-dc + spoke-dc only. Original gate (backup/image/observability/lifecycle) re-applies when DR work is in scope post-POC.</td><td>Resumption signal: explicit decision to re-open DR work; ADR-0005 is revisited.</td></tr>
+        <tr><td>Regional DR</td><td><strong>Deferred for the POC</strong> per <a href="https://github.com/zeshaq/brac-poc-wiki-v5-ocp/blob/main/adr/0005-defer-hub-dr-spoke-dr-poc-scope.md">ADR-0005</a>. spoke-dr stays platform standby (ADR-0001) without an active DR drill in POC scope. Drill captures (image pre-pull warmth, Vault role on spoke-dr, runbook activation steps, RTO) re-apply when DR work resumes.</td><td>Resumption signal: explicit decision to re-open DR work; ADR-0005 is revisited.</td></tr>
       </tbody>
     </table>
   </section>

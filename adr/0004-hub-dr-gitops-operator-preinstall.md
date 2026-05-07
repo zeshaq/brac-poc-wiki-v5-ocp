@@ -2,8 +2,17 @@
 
 ## Status
 
-Accepted — 2026-05-07. Augments [ADR-0003](0003-argocd-agent-via-acm-gitopsaddon.md);
-does not supersede it.
+**Superseded by [ADR-0005](0005-defer-hub-dr-spoke-dr-poc-scope.md) on 2026-05-07** (same day).
+
+Was: Accepted — 2026-05-07.
+
+The decision to install OpenShift GitOps Operator on hub-dr was implemented via
+`lab-gitops` MR !93 and immediately revealed an OLM-vs-RHACM-`gitopsaddon` conflict
+(CSV stuck in `Pending`). MR !94 reverted the change. The follow-up needed to make
+the install land cleanly is non-trivial and out of scope for the POC; ADR-0005
+defers all hub-dr / spoke-dr work to a future DR-focused track. The Red Hat docs
+quoted in this ADR remain accurate — they're the right reference for when DR work
+is in scope.
 
 ## Context
 
