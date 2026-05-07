@@ -14,7 +14,7 @@
   <nav class="nav">
     <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/production-readiness">Production readiness</a><a href="/roadmap">Roadmap</a><a href="/operating-rules" aria-current="page">Operating rules</a>
   </nav>
-  <div class="sidebar-note">Snapshot: 2026-05-06 UTC</div>
+  <div class="sidebar-note">Snapshot: 2026-05-07 UTC</div>
 </aside>
 <main id="main" class="content">
   <header class="page-header">
@@ -38,7 +38,7 @@
       <li>Do not print secrets, kubeconfigs, kubeadmin passwords, pull secrets, PAT values, or full Secret manifests.</li>
       <li>Do not modify live clusters unless the user explicitly asks for remediation.</li>
       <li>Use read-only checks before remediation so actions are based on current state, not stale notes.</li>
-      <li>Treat <code>lab-gitops-full/</code> as platform desired state and <code>lab-workloads/</code> as non-platform workload desired state.</li>
+      <li>Treat <code>lab-gitops/</code> as platform desired state and <code>lab-workloads/</code> as non-platform workload desired state.</li>
       <li>Never revert unrelated user changes in local repositories.</li>
     </ul>
   </section>
