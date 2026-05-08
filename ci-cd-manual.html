@@ -23,10 +23,10 @@
     <p>
       This guide documents the manually repeatable CI/CD path proven in the
       lab: create or update a workload, build its container image with Jenkins,
-      push the image to Nexus, publish desired state to Git, and let OpenShift
-      GitOps pull the application into <code>spoke-dc</code>. The example uses
-      the Open Liberty Operator smoke app, but the same control flow applies
-      to a plain Deployment workload.
+      push the image to Nexus, publish desired state to Git, and let hub Argo
+      CD apply the application to <code>spoke-dc</code> through the registered
+      destination cluster. The example uses the Open Liberty Operator smoke
+      app, but the same control flow applies to a plain Deployment workload.
     </p>
   </header>
 
