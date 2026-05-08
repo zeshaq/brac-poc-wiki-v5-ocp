@@ -48,7 +48,6 @@
     <div class="section-head"><p class="section-kicker">Current repo facts</p><h2>Recent boundaries enforced</h2></div>
     <ul class="plain-list">
       <li><code>demo-orders</code> was removed from <code>lab-workloads</code>; inactive non-core app middleware fixtures were removed from OpenShift desired state.</li>
-      <li>AMQ Streams, Streams Console, and Apicurio Registry were removed from live spoke desired state.</li>
       <li>Hub storage-light work removed ODF/NooBaa, Pipelines, logging, tracing, MinIO/Loki/Tempo, and app observability test stacks from hubs while retaining LVMS and RHACS.</li>
       <li>ACM Observability was added back as a hub management service through <code>components/platform/acm-observability</code>; its object-store Secret remains local-only.</li>
       <li>The ACS Critical-fixable admission policy now excludes <code>open-cluster-management-observability</code> and <code>openshift-image-prepull</code> as trusted platform namespaces.</li>
