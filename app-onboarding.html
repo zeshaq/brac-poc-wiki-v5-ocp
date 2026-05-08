@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding" aria-current="page">App onboarding</a><a href="/production-readiness">Production readiness</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding" aria-current="page">App onboarding</a><a href="/ci-cd-manual">Manual CI/CD</a><a href="/production-readiness">Production readiness</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-07 UTC</div>
 </aside>
@@ -45,6 +45,10 @@
       <li>App overlays should target <code>spoke-dc</code> first unless an explicit DR placement decision is made.</li>
       <li>Keep secret values, pull secrets, and full Secret manifests out of Git.</li>
     </ul>
+    <p>
+      For the full manual delivery path from source to running workload, use
+      the <a href="/ci-cd-manual">Manual CI/CD</a> runbook.
+    </p>
   </section>
 
   <section class="panel">
@@ -63,7 +67,7 @@
     <p>Application-specific external services are not tracked in this OpenShift wiki unless they are required to explain OpenShift placement, secret delivery, routing, monitoring, backup behavior, or recovery. Keep this section limited to OpenShift-facing requirements and links.</p>
   </section>
 
-  <p class="next-link"><a href="/production-readiness">Next: production readiness</a></p>
+  <p class="next-link"><a href="/ci-cd-manual">Next: manual CI/CD</a></p>
 </main>
 </body>
 </html>

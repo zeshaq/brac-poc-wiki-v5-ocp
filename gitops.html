@@ -12,7 +12,7 @@
 <aside class="sidebar" aria-label="Wiki navigation">
   <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
   <nav class="nav">
-    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops" aria-current="page">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/production-readiness">Production readiness</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops" aria-current="page">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/ci-cd-manual">Manual CI/CD</a><a href="/production-readiness">Production readiness</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
   </nav>
   <div class="sidebar-note">Snapshot: 2026-05-07 UTC</div>
 </aside>
@@ -57,6 +57,7 @@
       <li><code>components/platform/hub-image-prepull</code> warms selected hub recovery images but does not replace durable image mirroring.</li>
       <li><code>components/platform/external-secrets-vault</code> defines the non-secret OpenShift side of the external Vault integration: service accounts, TokenReview RBAC, <code>SecretStore/rke2-vault</code>, and the smoke <code>ExternalSecret</code>.</li>
       <li>Vault tokens, TokenReview JWTs, app secret values, and full Secret manifests remain outside Git.</li>
+      <li>The manual Jenkins-to-Nexus-to-OpenShift workload delivery flow is documented in <a href="/ci-cd-manual">Manual CI/CD</a>.</li>
       <li><code>lab-gitops/CHANGELOG.md</code> must be updated when desired-state changes occur.</li>
     </ul>
   </section>

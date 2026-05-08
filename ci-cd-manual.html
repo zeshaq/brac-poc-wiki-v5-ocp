@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Manual CI/CD runbook for building with Jenkins, pushing images to Nexus, and deploying to OpenShift with GitOps.">
+<title>Manual CI/CD Guide - BRAC POC OCP Wiki</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<aside class="sidebar" aria-label="Wiki navigation">
+  <div class="brand"><div class="brand-mark" aria-hidden="true">OCP</div><div><div class="brand-title">BRAC POC</div><div class="brand-sub">OpenShift wiki</div></div></div>
+  <nav class="nav">
+    <a href="/">Overview</a><a href="/topology">Topology</a><a href="/diagrams">Diagrams</a><a href="/gitops">GitOps model</a><a href="/hub-dc">hub-dc</a><a href="/hub-dr">hub-dr</a><a href="/spoke-dc">spoke-dc</a><a href="/spoke-dr">spoke-dr</a><a href="/platform-services">Platform services</a><a href="/secrets-vault">Secrets and Vault</a><a href="/backup-dr">Backup and DR</a><a href="/service-mesh">Service mesh</a><a href="/app-onboarding">App onboarding</a><a href="/ci-cd-manual" aria-current="page">Manual CI/CD</a><a href="/production-readiness">Production readiness</a><a href="/roadmap">Roadmap</a><a href="/operating-rules">Operating rules</a>
+  </nav>
+  <div class="sidebar-note">Snapshot: 2026-05-08 UTC</div>
+</aside>
+<main id="main" class="content">
+  <header class="page-header">
+    <div class="eyebrow">CI/CD runbook</div>
+    <h1>Manual Jenkins to Nexus to OpenShift delivery</h1>
+    <p>
+      This guide documents the manually repeatable CI/CD path proven in the
+      lab: create or update a workload, build its container image with Jenkins,
+      push the image to Nexus, publish desired state to Git, and let OpenShift
+      GitOps pull the application into <code>spoke-dc</code>. The example uses
+      the Open Liberty Operator smoke app, but the same control flow applies
+      to a plain Deployment workload.
+    </p>
+  </header>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Scope</p><h2>What this process does</h2></div>
+    <table>
+      <thead><tr><th>Stage</th><th>System</th><th>Output</th></tr></thead>
+      <tbody>
+        <tr><td>Source and manifests</td><td><code>lab-workloads</code></td><td>Application source, Containerfile, namespace, service, route, and workload CRs.</td></tr>
+        <tr><td>Image build</td><td>Jenkins on RKE2</td><td>Short-lived Buildah pod builds the image.</td></tr>
+        <tr><td>Image registry</td><td>Nexus</td><td>Application image under <code>nexus-docker.apps.sub.comptech-lab.com/opp/...</code>.</td></tr>
+        <tr><td>Deployment trigger</td><td><code>lab-gitops-full</code></td><td>Argo CD Application points the spoke to the workload path.</td></tr>
+        <tr><td>Runtime</td><td>OpenShift <code>spoke-dc</code></td><td>Operator-managed app, pod, service, route, health endpoints, and GitOps status.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Safety</p><h2>Non-negotiable rules</h2></div>
+    <ul class="plain-list">
+      <li>Do not print or commit kubeconfigs, kubeadmin passwords, Jenkins passwords, PAT values, Nexus passwords, Vault tokens, pull secrets, or full Secret manifests.</li>
+      <li>Use <code>lab-workloads</code> for application source and workload manifests. Use <code>lab-gitops-full</code> only to register the Argo CD Application and platform dependencies.</li>
+      <li>Prefer GitOps for durable deployment state. Live <code>oc apply</code> is acceptable for dry-run validation and short bootstrap steps, but reconcile desired state back to Git.</li>
+      <li>Use a unique image tag per build, normally <code>build-YYYYMMDD-HHMMSS</code>. Avoid mutable <code>latest</code> in OpenShift manifests.</li>
+      <li>Use app-specific Vault and External Secrets Operator wiring for production. A live-copied <code>nexus-docker-pull</code> Secret is only a bootstrap bridge.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Prerequisites</p><h2>Confirm the path is ready</h2></div>
+    <pre class="command"><code>K=/home/ze/codex-opp-agent/ocp-clusters/spoke-dc/auth/kubeconfig
+
+# OpenShift GitOps is running on the spoke.
+oc --kubeconfig "$K" -n openshift-gitops get pods,argocd,app
+
+# Open Liberty Operator is present when using OpenLibertyApplication.
+oc --kubeconfig "$K" get crd | grep openliberty
+oc --kubeconfig "$K" get csv -A | grep -i "open.*liberty"
+
+# Jenkins and Nexus routes should be reachable from the operator workstation.
+curl -skI https://jenkins.apps.sub.comptech-lab.com
+curl -skI https://nexus.apps.sub.comptech-lab.com
+curl -skI https://nexus-docker.apps.sub.comptech-lab.com/v2/</code></pre>
+    <p>
+      A <code>401 Unauthorized</code> response from the Nexus Docker
+      <code>/v2/</code> endpoint is normal; it proves the registry endpoint is
+      reachable and asking for authentication.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 1</p><h2>Choose application coordinates</h2></div>
+    <p>Pick names once and use them consistently through Jenkins, Nexus, GitOps, and OpenShift.</p>
+    <pre class="command"><code>APP_NAME=openliberty-smoke-app
+APP_NAMESPACE=openliberty-smoke-app
+IMAGE_REPOSITORY=opp/openliberty-smoke-app
+IMAGE_REGISTRY=nexus-docker.apps.sub.comptech-lab.com
+IMAGE_PUSH_REGISTRY=nexus.nexus.svc.cluster.local:5000
+IMAGE_TAG=build-$(date -u +%Y%m%d-%H%M%S)
+ROUTE_HOST=openliberty-smoke-app.apps.spoke-dc.ocp.comptech-lab.com</code></pre>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 2</p><h2>Create the workload source</h2></div>
+    <p>
+      Keep the workload in <code>lab-workloads/components/apps/&lt;app&gt;</code>.
+      For Open Liberty, a very small app can be an expanded WAR directory plus
+      <code>server.xml</code>.
+    </p>
+    <pre class="command"><code>cd /home/ze/codex-opp-agent/lab-workloads
+mkdir -p components/apps/$APP_NAME/source/app/WEB-INF
+mkdir -p components/apps/$APP_NAME/source/src/main/liberty/config</code></pre>
+    <p>Containerfile for the validated Open Liberty smoke path:</p>
+    <pre class="command"><code>FROM icr.io/appcafe/open-liberty:25.0.0.6-kernel-slim-java17-openj9-ubi-minimal
+COPY --chown=1001:0 src/main/liberty/config/server.xml /config/server.xml
+RUN features.sh
+COPY --chown=1001:0 app /config/apps/openliberty-smoke.war
+ENV APP_NAME=openliberty-smoke-app
+EXPOSE 9080</code></pre>
+    <p>Minimal Liberty server config:</p>
+    <pre class="command"><code>&lt;server description="Open Liberty smoke app"&gt;
+  &lt;featureManager&gt;
+    &lt;feature&gt;pages-3.1&lt;/feature&gt;
+    &lt;feature&gt;mpHealth-4.0&lt;/feature&gt;
+  &lt;/featureManager&gt;
+
+  &lt;httpEndpoint id="defaultHttpEndpoint" host="*" httpPort="9080"/&gt;
+  &lt;webApplication location="openliberty-smoke.war" contextRoot="/"/&gt;
+&lt;/server&gt;</code></pre>
+    <p>
+      Use <code>pages-3.1</code> for JSP pages on this Liberty version. The
+      feature name <code>jsp-3.1</code> is not valid and makes
+      <code>features.sh</code> fail.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 3</p><h2>Create or update the Jenkins job</h2></div>
+    <p>
+      The validated jobs are freestyle Jenkins jobs represented as XML files
+      under <code>/home/ze/codex-opp-agent/reports/</code>. The job should do
+      four things: prepare source, obtain the Nexus push credential without
+      printing it, create a short-lived privileged Buildah pod, then push the
+      final image to Nexus.
+    </p>
+    <pre class="command"><code>JENKINS_URL=https://jenkins.apps.sub.comptech-lab.com
+JOB=openliberty-smoke-app-image-build
+
+# Read credentials from an approved local-only source. Never echo this value.
+JENKINS_USER=admin
+JENKINS_PASSWORD_FILE=/path/to/local-only/jenkins-password-file
+AUTH="$JENKINS_USER:$(tr -d '\r\n' &lt; "$JENKINS_PASSWORD_FILE")"
+COOKIE=$(mktemp)
+
+crumb_json=$(curl -sk -c "$COOKIE" --user "$AUTH" \
+  "$JENKINS_URL/crumbIssuer/api/json")
+crumb_header=$(printf '%s' "$crumb_json" \
+  | jq -r '.crumbRequestField + ": " + .crumb')
+
+curl -sk -b "$COOKIE" --user "$AUTH" \
+  -H "$crumb_header" \
+  -H 'Content-Type: application/xml' \
+  --data-binary @/home/ze/codex-opp-agent/reports/openliberty-smoke-app-jenkins-job.xml \
+  "$JENKINS_URL/job/$JOB/config.xml"</code></pre>
+    <p>
+      If the job does not exist yet, create it first with
+      <code>$JENKINS_URL/createItem?name=$JOB</code> and the same XML body.
+      If using the Jenkins UI, create a freestyle job and paste the shell body
+      from the XML into the build step.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 4</p><h2>Run the Jenkins build</h2></div>
+    <pre class="command"><code>IMAGE_TAG=build-$(date -u +%Y%m%d-%H%M%S)
+NEXT=$(curl -sk -b "$COOKIE" --user "$AUTH" \
+  "$JENKINS_URL/job/$JOB/api/json?tree=nextBuildNumber" | jq -r '.nextBuildNumber')
+
+curl -sk -b "$COOKIE" --user "$AUTH" \
+  -H "$crumb_header" \
+  --data-urlencode "IMAGE_TAG=$IMAGE_TAG" \
+  --data-urlencode 'APP_MESSAGE=Open Liberty app built by Jenkins, pushed to Nexus, and deployed by the Open Liberty Operator' \
+  "$JENKINS_URL/job/$JOB/buildWithParameters"
+
+echo "Started $JOB build #$NEXT with tag $IMAGE_TAG"</code></pre>
+    <p>Watch the build without exposing credentials:</p>
+    <pre class="command"><code>curl -sk -b "$COOKIE" --user "$AUTH" \
+  "$JENKINS_URL/job/$JOB/$NEXT/consoleText" \
+  | sed -E 's#(X-Vault-Token: )[A-Za-z0-9._-]+#\1[REDACTED]#g; s#(Authorization: Bearer )[A-Za-z0-9._-]+#\1[REDACTED]#g; s#(auth": ")[^"]+#\1[REDACTED]#g'</code></pre>
+    <p>
+      The successful Open Liberty reference run was Jenkins build <code>#6</code>,
+      tag <code>build-20260507-215919</code>.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 5</p><h2>Confirm the image in Nexus</h2></div>
+    <p>
+      Jenkins prints the image and digest at the end of a successful build.
+      For independent verification, inspect the manifest using an auth file
+      generated from a local secret source. Do not print the auth file.
+    </p>
+    <pre class="command"><code>IMAGE="$IMAGE_REGISTRY/$IMAGE_REPOSITORY:$IMAGE_TAG"
+AUTHFILE=$(mktemp)
+
+# Populate $AUTHFILE from a local-only approved credential source.
+# Example output should not be committed or pasted into tickets.
+
+podman manifest inspect --authfile "$AUTHFILE" --tls-verify=false "$IMAGE" \
+  | jq '{schemaVersion, mediaType, config: .config.digest, compressedBytes: (.layers | map(.size) | add)}'
+
+rm -f "$AUTHFILE"</code></pre>
+    <p>
+      The validated Open Liberty smoke image digest is
+      <code>sha256:f4e759125a2eb562a5047b625364d0f1bbcd8e705bca26a56e077827116889bf</code>.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 6</p><h2>Create the OpenShift workload manifests</h2></div>
+    <p>
+      For an Open Liberty Operator deployment, use an
+      <code>OpenLibertyApplication</code>. Pin the exact Nexus tag and use
+      <code>manageTLS: false</code> when the app listens on HTTP behind an
+      edge-terminated OpenShift Route.
+    </p>
+    <pre class="command"><code>apiVersion: apps.openliberty.io/v1
+kind: OpenLibertyApplication
+metadata:
+  name: openliberty-smoke-app
+  namespace: openliberty-smoke-app
+spec:
+  applicationName: openliberty-smoke-app
+  applicationVersion: build-20260507-215919
+  applicationImage: nexus-docker.apps.sub.comptech-lab.com/opp/openliberty-smoke-app:build-20260507-215919
+  pullSecret: nexus-docker-pull
+  pullPolicy: IfNotPresent
+  replicas: 1
+  manageTLS: false
+  expose: true
+  route:
+    host: openliberty-smoke-app.apps.spoke-dc.ocp.comptech-lab.com
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  service:
+    type: ClusterIP
+    port: 9080
+    targetPort: 9080
+    portName: http
+  probes:
+    readiness:
+      httpGet:
+        path: /health/ready
+        port: 9080
+      initialDelaySeconds: 20
+      periodSeconds: 10
+      timeoutSeconds: 3
+      failureThreshold: 12
+    liveness:
+      httpGet:
+        path: /health/live
+        port: 9080
+      initialDelaySeconds: 40
+      periodSeconds: 20
+      timeoutSeconds: 3
+      failureThreshold: 6</code></pre>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 7</p><h2>Prepare image pull credentials</h2></div>
+    <p>
+      Preferred production pattern: create an app-specific Vault policy and
+      Kubernetes auth role, then use ESO to materialize
+      <code>Secret/nexus-docker-pull</code> in the app namespace.
+    </p>
+    <p>
+      Temporary bootstrap pattern: copy an existing pull secret into the app
+      namespace without printing its contents. This is a bridge only and must
+      be tracked as cleanup.
+    </p>
+    <pre class="command"><code>K=/home/ze/codex-opp-agent/ocp-clusters/spoke-dc/auth/kubeconfig
+
+oc --kubeconfig "$K" create namespace "$APP_NAMESPACE" \
+  --dry-run=client -o yaml | oc --kubeconfig "$K" apply -f -
+
+oc --kubeconfig "$K" -n wso2-demo-app get secret nexus-docker-pull -o json \
+  | jq 'del(.metadata.uid,.metadata.resourceVersion,.metadata.creationTimestamp,.metadata.managedFields,.metadata.ownerReferences,.metadata.annotations["kubectl.kubernetes.io/last-applied-configuration"])
+        | .metadata.name="nexus-docker-pull"
+        | .metadata.namespace="openliberty-smoke-app"
+        | .metadata.labels={"app.kubernetes.io/name":"openliberty-smoke-app","app.kubernetes.io/component":"image-pull","gitops.lab/bootstrap":"live-secret-copy"}' \
+  | oc --kubeconfig "$K" apply -f - -o name</code></pre>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 8</p><h2>Render and dry-run before pushing</h2></div>
+    <pre class="command"><code>cd /home/ze/codex-opp-agent
+
+oc kustomize lab-workloads/components/apps/openliberty-smoke-app \
+  &gt; /tmp/openliberty-smoke-app-render.yaml
+
+oc --kubeconfig "$K" apply --dry-run=client \
+  -f /tmp/openliberty-smoke-app-render.yaml -o name
+
+oc --kubeconfig "$K" apply --dry-run=server \
+  -f /tmp/openliberty-smoke-app-render.yaml -o name</code></pre>
+    <p>
+      Server-side dry-run requires the CRD and target namespace to exist. If
+      the namespace is new, create it first or rely on Argo CD
+      <code>CreateNamespace=true</code> after the client-side render passes.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 9</p><h2>Commit and push the workload repo</h2></div>
+    <pre class="command"><code>cd /home/ze/codex-opp-agent/lab-workloads
+git status --short
+git add components/apps/openliberty-smoke-app
+git commit -m "Add Open Liberty Jenkins Nexus smoke app"
+GIT_ASKPASS=/home/ze/codex-opp-agent/secrets/git-askpass.sh git push origin main</code></pre>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 10</p><h2>Register the Argo CD Application</h2></div>
+    <p>Add this to <code>lab-gitops-full/clusters/spoke-dc/</code> and include it in the spoke overlay kustomization.</p>
+    <pre class="command"><code>apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: openliberty-smoke-app
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "20"
+spec:
+  project: default
+  source:
+    repoURL: http://30.30.30.5/gitops/lab-workloads.git
+    targetRevision: main
+    path: components/apps/openliberty-smoke-app
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: openliberty-smoke-app
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
+      - SkipDryRunOnMissingResource=true
+      - ServerSideApply=true</code></pre>
+    <pre class="command"><code>cd /home/ze/codex-opp-agent/lab-gitops-full
+oc kustomize clusters/spoke-dc &gt; /tmp/spoke-dc-render.yaml
+git add CHANGELOG.md clusters/spoke-dc/kustomization.yaml clusters/spoke-dc/openliberty-smoke-app-application.yaml
+git commit -m "Add Open Liberty smoke app Argo application"
+GIT_ASKPASS=/home/ze/codex-opp-agent/secrets/git-askpass.sh git push origin main</code></pre>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 11</p><h2>Refresh Argo CD and wait for sync</h2></div>
+    <pre class="command"><code>K=/home/ze/codex-opp-agent/ocp-clusters/spoke-dc/auth/kubeconfig
+
+oc --kubeconfig "$K" -n openshift-gitops annotate app spoke-dc-cluster-config \
+  argocd.argoproj.io/refresh=hard --overwrite
+
+oc --kubeconfig "$K" -n openshift-gitops get app openliberty-smoke-app
+
+oc --kubeconfig "$K" -n openshift-gitops annotate app openliberty-smoke-app \
+  argocd.argoproj.io/refresh=hard --overwrite
+
+oc --kubeconfig "$K" -n openshift-gitops get app openliberty-smoke-app \
+  -o custom-columns=NAME:.metadata.name,SYNC:.status.sync.status,HEALTH:.status.health.status,REV:.status.sync.revision</code></pre>
+    <p>Expected final state: <code>Synced</code> and <code>Healthy</code> at the pushed workload commit.</p>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 12</p><h2>Validate the deployed app</h2></div>
+    <pre class="command"><code>oc --kubeconfig "$K" -n openliberty-smoke-app get openlibertyapplication,pod,svc,route -o wide
+
+oc --kubeconfig "$K" -n openliberty-smoke-app get pod \
+  -l app.kubernetes.io/instance=openliberty-smoke-app \
+  -o jsonpath='{range .items[*]}{.metadata.name}{" image="}{.spec.containers[0].image}{" imageID="}{.status.containerStatuses[0].imageID}{" ready="}{.status.containerStatuses[0].ready}{" phase="}{.status.phase}{"\n"}{end}'
+
+curl -sk https://openliberty-smoke-app.apps.spoke-dc.ocp.comptech-lab.com/health/live
+curl -sk https://openliberty-smoke-app.apps.spoke-dc.ocp.comptech-lab.com/health/ready
+curl -sk https://openliberty-smoke-app.apps.spoke-dc.ocp.comptech-lab.com/metadata</code></pre>
+    <p>
+      Expected reference output: app <code>openliberty-smoke-app</code>,
+      runtime <code>Open Liberty</code>, image tag
+      <code>build-20260507-215919</code>, namespace
+      <code>openliberty-smoke-app</code>, and HTTP <code>200</code> from both
+      health endpoints.
+    </p>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Step 13</p><h2>Record the delivery</h2></div>
+    <ul class="plain-list">
+      <li>Update <code>CURRENT_STATE.md</code> with image tag, digest, route, Argo revision, and validation result.</li>
+      <li>Update <code>TODO.md</code> for any residual cleanup, especially bootstrap pull secrets.</li>
+      <li>Append <code>SESSION_LOG.md</code> and create a detailed file under <code>reports/sessions/</code>.</li>
+      <li>If <code>lab-gitops-full</code> changed, update <code>lab-gitops-full/CHANGELOG.md</code>.</li>
+      <li>If the process itself changed, update <code>RUNBOOK.md</code> and this wiki page.</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Troubleshooting</p><h2>Common failure modes</h2></div>
+    <table>
+      <thead><tr><th>Symptom</th><th>Likely cause</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>Build pod stuck on base image pull</td><td>Slow external registry or vfs storage unpack</td><td>Use the IBM Open Liberty mirror, prefer the kernel-slim base, and use Buildah overlay storage on the Jenkins cache PVC.</td></tr>
+        <tr><td><code>CWWKF1402E</code> from <code>features.sh</code></td><td>Invalid Liberty feature name</td><td>Use <code>pages-3.1</code> for JSP and <code>mpHealth-4.0</code> for health endpoints on the validated Liberty image.</td></tr>
+        <tr><td>Pod stays unready with HTTPS probe errors</td><td>Open Liberty Operator defaulted TLS management for a HTTP service</td><td>Set <code>manageTLS: false</code> for HTTP-on-9080 behind an edge-terminated Route.</td></tr>
+        <tr><td>Image pull fails on OpenShift</td><td>Missing or invalid <code>nexus-docker-pull</code></td><td>Verify the pull secret exists in the app namespace. Replace bootstrap copies with Vault/ESO as soon as possible.</td></tr>
+        <tr><td>Argo CD stays OutOfSync</td><td>Operator or Kubernetes defaulted a field</td><td>Compare desired and live specs. Make harmless defaults explicit, such as <code>service.type: ClusterIP</code>.</td></tr>
+        <tr><td>Route returns 503</td><td>Pod not ready or Service selector mismatch</td><td>Check pod readiness, service endpoints, and the operator-managed labels on the Deployment and Service.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="panel">
+    <div class="section-head"><p class="section-kicker">Reference state</p><h2>Validated Open Liberty smoke deployment</h2></div>
+    <ul class="plain-list">
+      <li><strong>Jenkins job:</strong> <code>openliberty-smoke-app-image-build</code></li>
+      <li><strong>Successful build:</strong> <code>#6</code></li>
+      <li><strong>Nexus image:</strong> <code>nexus-docker.apps.sub.comptech-lab.com/opp/openliberty-smoke-app:build-20260507-215919</code></li>
+      <li><strong>Digest:</strong> <code>sha256:f4e759125a2eb562a5047b625364d0f1bbcd8e705bca26a56e077827116889bf</code></li>
+      <li><strong>GitOps app:</strong> <code>Application/openliberty-smoke-app</code> in <code>openshift-gitops</code></li>
+      <li><strong>Runtime CR:</strong> <code>OpenLibertyApplication/openliberty-smoke-app</code></li>
+      <li><strong>Route:</strong> <code>https://openliberty-smoke-app.apps.spoke-dc.ocp.comptech-lab.com</code></li>
+      <li><strong>Residual cleanup:</strong> replace the bootstrap pull secret with app-specific Vault/ESO wiring.</li>
+    </ul>
+  </section>
+
+  <p class="next-link"><a href="/production-readiness">Next: production readiness</a></p>
+</main>
+</body>
+</html>
